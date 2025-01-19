@@ -4,10 +4,10 @@ import numpy as np
 
 # Load the pre-trained model
 try:
-    with open(r"C:\Users\user\Desktop\projects\projct/lr.pkl", "rb") as file:
+    with open("artifacts/lr.pkl", "rb") as file:
         model = pickle.load(file)
 except FileNotFoundError:
-    st.error("Model file not found. Please ensure 'lr.pkl' exists in the 'projct' directory.")
+    st.error("Model file not found. Please ensure 'lr.pkl' exists in the 'artifacts' directory.")
     st.stop()
 except Exception as e:
     st.error(f"An error occurred while loading the model: {e}")
