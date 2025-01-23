@@ -1,5 +1,5 @@
 import streamlit as st
-import tensorflow
+import tensorflow as st
 from tensorflow.keras.models import load_model
 import cv2
 import numpy as np
