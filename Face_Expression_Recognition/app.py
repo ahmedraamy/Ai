@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from PIL import Image
 
 # Load the trained model
-model = load_model('artifacts/model.keras')
+model = load_model('Face_Expression_Recognition/artifacts/model.keras')
 
 # List of class names (you can modify this list based on your dataset)
 class_names = ['Anger', 'Disgust', 'Fear', 'Happy', 'Sadness', 'Surprise', 'Neutral']
