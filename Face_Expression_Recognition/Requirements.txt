@@ -1,6 +1,0 @@
-streamlit==1.41.1
-tensorflow-cpu==2.17.1  # Use the CPU version for compatibility on Streamlit Cloud
-opencv-python-headless==4.8.0.76
-numpy>=1.21.6,<1.25  # Avoid potential conflicts with TensorFlow
-matplotlib==3.10.0
-pillow==10.4.0  # Required for PIL (Image handling)
