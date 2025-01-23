@@ -1,5 +1,4 @@
 import streamlit as st
-pip install tensorflow
 import tensorflow
 from tensorflow.keras.models import load_model
 import cv2
