@@ -8,7 +8,11 @@ from PIL import Image
 
 
 # Load the trained model
-model = load_model('artifacts/model.keras')
+try:
+    model = load_model('artifacts/model.keras')
+except Exception as e:
+    st.error(f"Error loading model: {str(e)}")
+    st.stop()
 
 # List of class names (you can modify this list based on your dataset)
 class_names = ['Anger', 'Disgust', 'Fear', 'Happy', 'Sadness', 'Surprise', 'Neutral']
