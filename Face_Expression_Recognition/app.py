@@ -9,7 +9,7 @@ from PIL import Image
 
 # Load the trained model
 try:
-    model = load_model('artifacts/model.keras')
+    model = load_model('artifacts/mm.keras')
 except Exception as e:
     st.error(f"Error loading model: {str(e)}")
     st.stop()
