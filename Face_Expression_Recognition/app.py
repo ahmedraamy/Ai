@@ -1,4 +1,5 @@
 import streamlit as st
+pip install tensorflow
 import tensorflow
 from tensorflow.keras.models import load_model
 import cv2
@@ -6,7 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
 
-pip install tensorflow
+
 # Load the trained model
 model = load_model('artifacts/model.keras')
 
