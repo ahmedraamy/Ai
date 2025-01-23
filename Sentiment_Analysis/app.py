@@ -7,9 +7,9 @@ from pathlib import Path
 def load_model():
     # Load the model and vectorizer
     model = pickle.load(
-        open("artifacts/model.pkl", "rb")
+        open("Sentiment_Analysis/artifacts/model.pkl", "rb")
     )  # Use forward slashes for paths
-    vectorizer = pickle.load(open("artifacts/vectorizer.pkl", "rb"))
+    vectorizer = pickle.load(open("Sentiment_Analysis/artifacts/vectorizer.pkl", "rb"))
     return model, vectorizer
 
 # Load model and vectorizer
