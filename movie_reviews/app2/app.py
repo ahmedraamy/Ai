@@ -12,20 +12,22 @@ nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
+# Initialize models to None
+tf_model, lr, dt, svc = None, None, None, None
 
 # Load models
 try:
-    # TensorFlow model
-    tf_model = pickle.load(open('artifacts/tf.pkl', 'rb'))
-
-    # Other models
-    lr = pickle.load(open('artifacts/lr.pkl', 'rb'))
-    dt = pickle.load(open('artifacts/dt.pkl', 'rb'))
-    svc = pickle.load(open('artifacts/svc.pkl', 'rb'))
+    tf_model = pickle.load(open('artifacts/tf.pkl', 'rb'))  # TensorFlow model
+    lr = pickle.load(open('artifacts/lr.pkl', 'rb'))        # Logistic Regression model
+    dt = pickle.load(open('artifacts/dt.pkl', 'rb'))        # Decision Tree model
+    svc = pickle.load(open('artifacts/svc.pkl', 'rb'))      # Support Vector Classifier
 except FileNotFoundError as e:
     st.error(f"Model file not found: {e}")
-    tf_model, lr, dt, svc = None, None, None, None
 
+# Ensure at least one model is loaded
+if not (tf_model or lr or dt or svc):
+    st.error("No models could be loaded. Please check the model files and paths.")
+    st.stop() 
 # Stopwords setup
 stop_words = stopwords.words('english')
 stop_words.remove('not')
