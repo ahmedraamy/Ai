@@ -23,18 +23,6 @@ try:
     dt = pickle.load(open('movie_reviews/app2/artifacts/dt.pkl', 'rb'))
     svc = pickle.load(open('movie_reviews/app2/artifacts/svc.pkl', 'rb'))
     tf = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))
-    # Mark model loading as successful
-    st.session_state.model_loaded = True
-
-    # Display the success message if models are loaded
-    if st.session_state.model_loaded:
-        success_message.success("Models loaded successfully!")
-
-    # Wait for 1 second before clearing the message
-    time.sleep(1)
-    
-    # Clear the success message after 1 second
-    success_message.empty()
 except FileNotFoundError as e:
     st.error(f"Model file not found: {e}")
     lr, dt, svc, tf = None, None, None, None
