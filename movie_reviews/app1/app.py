@@ -8,23 +8,20 @@ from nltk.stem import WordNetLemmatizer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import tensorflow as tf
 from tensorflow.keras.models import load_model
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer  # Add this import for tokenizer
 
-# Download necessary NLTK resources
-nltk.download('punkt')
+# Load model
+model = load_model('movie_reviews/app1/artifacts/model.keras')
+
+# Load tokenizer
+tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
+
+with open('tokenizer.pkl', 'wb') as f:
+    pickle.dump(tokenizer, f)
+
 nltk.download('stopwords')
-nltk.download('wordnet')
-nltk.download('omw-1.4')
+nltk.download('punkt')
 
-# Load Keras model (if needed) and tokenizer
-try:
-    model = load_model(r'movie_reviews/app1/artifacts/model.keras')
-    tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')  # BERT tokenizer
-except Exception as e:
-    st.error(f"Error loading models: {e}")
-    st.stop()
-
-# NLTK stopwords setup
 stop_words = stopwords.words('english')
 stop_words.remove('not')
 stop_words.remove('no')
@@ -32,21 +29,15 @@ stop_words.remove('no')
 lemmatizer = WordNetLemmatizer()
 analyzer = SentimentIntensityAnalyzer()
 
-# Text preprocessing
 def text_preprocessing(text):
     text = text.lower()
     text = re.sub('[^a-zA-Z]', ' ', text)
-    try:
-        text = word_tokenize(text)
-    except LookupError:
-        nltk.download('punkt')
-        text = word_tokenize(text)
+    text = word_tokenize(text)
     text = [word for word in text if word not in stop_words]
     text = [lemmatizer.lemmatize(word) for word in text]
     text = ' '.join(text)
     return text
 
-# Sentiment prediction
 def predict_feedback(text):
     processed_text = text_preprocessing(text)
     sentiment_score = analyzer.polarity_scores(processed_text)
@@ -55,22 +46,24 @@ def predict_feedback(text):
         sentiment = 'Positive'
     else:
         sentiment = 'Negative'
-
-    # Display sentiment result
+    # Call st.markdown only once to display the sentiment analysis result
     st.markdown(
         f"<p style='color: red; font-weight: bold;'>The review is <b>{sentiment}</b></p>",
         unsafe_allow_html=True,
     )
 
-# Streamlit app
+def predict_movie_sentiment(text):
+    processed_text = text_preprocessing(text)
+    sentiment_score = analyzer.polarity_scores(processed_text)
+
 st.title('Movie Reviews App')
 
-user_input = st.text_area("Enter the text for movie review:", "I don't like this product.")
+user_input = st.text_area("Enter the text for movie review:" , "I don't like this product.")
 
 if st.button('Predict Sentiment'):
     prediction = predict_feedback(user_input)
+    # No need to write prediction here as it's just the function call
 
-# Custom Styling for the App
 st.markdown(
     """
     <style>
