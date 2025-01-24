@@ -23,8 +23,8 @@ try:
     st.success("Other models loaded successfully!")
     st.empty()
 except FileNotFoundError as e:
-st.error(f"Model file not found: {e}")
-lr, dt, svc, tf = None, None, None,None
+    st.error(f"Model file not found: {e}")
+    lr, dt, svc, tf = None, None, None,None
 
 nltk.download('stopwords')
 nltk.download('punkt')
