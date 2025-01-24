@@ -16,7 +16,7 @@ nltk.download('omw-1.4')
 # Load models
 try:
     # Load the TensorFlow/Keras model (update path if necessary)
-    tf = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))
+    tf = pickle.load(open(r'movie_reviews/app2/artifacts/tf.pkl', 'rb'))
 
     # Load other models
     lr = pickle.load(open('movie_reviews/app2/artifacts/lr.pkl', 'rb'))
