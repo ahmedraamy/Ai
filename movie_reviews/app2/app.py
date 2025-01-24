@@ -6,12 +6,8 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-import tensorflow as tf
-from tensorflow.keras.models import load_model
-from transformers import AutoTokenizer  # Add this import for tokenizer
 
 # Download necessary NLTK resources
-nltk.download('punkt_tab')
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
@@ -29,13 +25,21 @@ try:
 
 except FileNotFoundError as e:
     st.error(f"Model file not found: {e}")
+    tf, lr, dt, svc = None, None, None, None
 except Exception as e:
     st.error(f"An error occurred while loading the models: {e}")
+    tf, lr, dt, svc = None, None, None, None
 
 # Initialize stopwords and other NLP tools
-stop_words = stopwords.words('english')
-stop_words.remove('not')
-stop_words.remove('no')
+try:
+    stop_words = stopwords.words('english')
+    if 'not' in stop_words:
+        stop_words.remove('not')
+    if 'no' in stop_words:
+        stop_words.remove('no')
+except Exception as e:
+    st.error(f"Error initializing stopwords: {e}")
+    stop_words = []
 
 lemmatizer = WordNetLemmatizer()
 analyzer = SentimentIntensityAnalyzer()
@@ -74,7 +78,10 @@ user_input = st.text_area("Enter the text for movie review:", "I don't like this
 
 # Button to trigger sentiment prediction
 if st.button('Predict Sentiment'):
-    prediction = predict_feedback(user_input)
+    if tf or lr or dt or svc:
+        prediction = predict_feedback(user_input)
+    else:
+        st.error("Models could not be loaded. Please check the configuration.")
 
 # Custom Styling for Streamlit app
 st.markdown(
