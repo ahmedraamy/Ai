@@ -8,13 +8,28 @@ from nltk.stem import WordNetLemmatizer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import tensorflow as tf
 from tensorflow.keras.models import load_model
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer  # Add this import for tokenizer
 
 # Download necessary NLTK resources
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
+
+# Load models
+try:
+    # Load the TensorFlow/Keras model (update path if necessary)
+    tf_model = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))
+
+    # Load other models
+    lr = pickle.load(open('movie_reviews/app2/artifacts/lr.pkl', 'rb'))
+    dt = pickle.load(open('movie_reviews/app2/artifacts/dt.pkl', 'rb'))
+    svc = pickle.load(open('movie_reviews/app2/artifacts/svc.pkl', 'rb'))
+
+except FileNotFoundError as e:
+    st.error(f"Model file not found: {e}")
+except Exception as e:
+    st.error(f"An error occurred while loading the models: {e}")
 
 # Initialize stopwords and other NLP tools
 stop_words = stopwords.words('english')
@@ -50,41 +65,6 @@ def predict_feedback(text):
         unsafe_allow_html=True,
     )
 
-# Load models with error handling
-def load_models():
-    models = {}
-    try:
-        # Load the TensorFlow/Keras model
-        models['tf'] = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))
-        
-        # Load other models
-        models['lr'] = pickle.load(open('movie_reviews/app2/artifacts/lr.pkl', 'rb'))
-        models['dt'] = pickle.load(open('movie_reviews/app2/artifacts/dt.pkl', 'rb'))
-        models['svc'] = pickle.load(open('movie_reviews/app2/artifacts/svc.pkl', 'rb'))
-        
-        # Check if models are loaded properly
-        for model_name, model in models.items():
-            if model is None:
-                st.error(f"Model '{model_name}' is not loaded properly. It is None.")
-                return None
-        return models
-        
-    except FileNotFoundError as e:
-        st.error(f"Model file not found: {e}")
-    except Exception as e:
-        st.error(f"An error occurred while loading the models: {e}")
-    return None
-
-# Load models
-models = load_models()
-
-if models:
-    # Extract the models from the dictionary
-    tf_model = models['tf']
-    lr = models['lr']
-    dt = models['dt']
-    svc = models['svc']
-
 # Main App Interface
 st.title('Movie Reviews App')
 
@@ -93,8 +73,7 @@ user_input = st.text_area("Enter the text for movie review:", "I don't like this
 
 # Button to trigger sentiment prediction
 if st.button('Predict Sentiment'):
-    if models:
-        prediction = predict_feedback(user_input)
+    prediction = predict_feedback(user_input)
 
 # Custom Styling for Streamlit app
 st.markdown(
