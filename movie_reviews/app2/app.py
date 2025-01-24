@@ -2,7 +2,6 @@ import streamlit as st
 import pickle
 import re
 import nltk
-import time
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
@@ -12,21 +11,26 @@ from tensorflow.keras.models import load_model
 from transformers import AutoTokenizer  # Add this import for tokenizer
 
 # Download necessary NLTK resources
-nltk.download('punkt')
 nltk.download('punkt_tab')
+nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
 
 # Load models
 try:
+    # Load the TensorFlow/Keras model (update path if necessary)
+    tf = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))
+
+    # Load other models
     lr = pickle.load(open('movie_reviews/app2/artifacts/lr.pkl', 'rb'))
     dt = pickle.load(open('movie_reviews/app2/artifacts/dt.pkl', 'rb'))
     svc = pickle.load(open('movie_reviews/app2/artifacts/svc.pkl', 'rb'))
-    tf_model = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))
+
 except FileNotFoundError as e:
     st.error(f"Model file not found: {e}")
-    lr, dt, svc, tf_model = None, None, None, None
+except Exception as e:
+    st.error(f"An error occurred while loading the models: {e}")
 
 # Initialize stopwords and other NLP tools
 stop_words = stopwords.words('english')
@@ -36,6 +40,7 @@ stop_words.remove('no')
 lemmatizer = WordNetLemmatizer()
 analyzer = SentimentIntensityAnalyzer()
 
+# Text Preprocessing function
 def text_preprocessing(text):
     text = text.lower()
     text = re.sub('[^a-zA-Z]', ' ', text)
@@ -45,6 +50,7 @@ def text_preprocessing(text):
     text = ' '.join(text)
     return text
 
+# Predict Sentiment function
 def predict_feedback(text):
     processed_text = text_preprocessing(text)
     sentiment_score = analyzer.polarity_scores(processed_text)
@@ -53,22 +59,22 @@ def predict_feedback(text):
         sentiment = 'Positive'
     else:
         sentiment = 'Negative'
-
-    # Call st.markdown only once to display the sentiment analysis result
+    
+    # Display result using Streamlit markdown
     st.markdown(
         f"<p style='color: red; font-weight: bold;'>The review is <b>{sentiment}</b></p>",
         unsafe_allow_html=True,
     )
 
+# Main App Interface
 st.title('Movie Reviews App')
 
+# Text area for user input
 user_input = st.text_area("Enter the text for movie review:", "I don't like this product.")
 
+# Button to trigger sentiment prediction
 if st.button('Predict Sentiment'):
-    if tf_model or lr or dt or svc:  # Ensure at least one model is loaded
-        predict_feedback(user_input)
-    else:
-        st.error("Models could not be loaded. Please check the configuration.")
+    prediction = predict_feedback(user_input)
 
 # Custom Styling for Streamlit app
 st.markdown(
@@ -107,3 +113,5 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+----
+An error occurred while loading the models: 'NoneType' object has no attribute 'pop'
