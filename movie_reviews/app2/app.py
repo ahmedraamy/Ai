@@ -1,3 +1,4 @@
+
 import streamlit as st
 import pickle
 import re
@@ -6,15 +7,16 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-from keras.models import load_model
+import tensorflow as tf
+from tensorflow.keras.models import load_model
+from transformers import AutoTokenizer  # Add this import for tokenizer
 
-# Download necessary NLTK resources
 nltk.download('punkt_tab')
 nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
+# Load model
 
-# Load pre-trained models and setup pre-processing
 try:
     # Load the TensorFlow/Keras model (update path if necessary)
     tf = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))
@@ -24,63 +26,52 @@ try:
     dt = pickle.load(open('movie_reviews/app2/artifacts/dt.pkl', 'rb'))
     svc = pickle.load(open('movie_reviews/app2/artifacts/svc.pkl', 'rb'))
 
-    # Pre-processing setup
-    stop_words = stopwords.words('english')
-    if 'not' in stop_words:
-        stop_words.remove('not')
-    if 'no' in stop_words:
-        stop_words.remove('no')
 
-    lemmatizer = WordNetLemmatizer()
-    analyzer = SentimentIntensityAnalyzer()
+nltk.download('stopwords')
+nltk.download('punkt')
 
-except FileNotFoundError as e:
-    st.error(f"Model file not found: {e}")
-    st.stop()
-except Exception as e:
-    st.error(f"An error occurred while loading models: {e}")
-    st.stop()
+stop_words = stopwords.words('english')
+stop_words.remove('not')
+stop_words.remove('no')
 
-# Pre-process the input text
+lemmatizer = WordNetLemmatizer()
+analyzer = SentimentIntensityAnalyzer()
+
 def text_preprocessing(text):
-    text = text.lower()  # Convert text to lowercase
-    text = re.sub('[^a-zA-Z]', ' ', text)  # Remove non-alphabetical characters
-    text = word_tokenize(text)  # Tokenize text into words
-    text = [word for word in text if word not in stop_words]  # Remove stopwords
-    text = [lemmatizer.lemmatize(word) for word in text]  # Lemmatize words
-    text = ' '.join(text)  # Join words back into a string
+    text = text.lower()
+    text = re.sub('[^a-zA-Z]', ' ', text)
+    text = word_tokenize(text)
+    text = [word for word in text if word not in stop_words]
+    text = [lemmatizer.lemmatize(word) for word in text]
+    text = ' '.join(text)
     return text
 
-# Sentiment prediction function
 def predict_feedback(text):
-    processed_text = text_preprocessing(text)  # Preprocess the text
-    sentiment_score = analyzer.polarity_scores(processed_text)  # Get sentiment scores
+    processed_text = text_preprocessing(text)
+    sentiment_score = analyzer.polarity_scores(processed_text)
 
     if sentiment_score['compound'] > 0:
         sentiment = 'Positive'
     else:
         sentiment = 'Negative'
-
-    # Display the sentiment result and score
+    # Call st.markdown only once to display the sentiment analysis result
     st.markdown(
         f"<p style='color: red; font-weight: bold;'>The review is <b>{sentiment}</b></p>",
         unsafe_allow_html=True,
     )
-    st.write(f"Sentiment Score: {sentiment_score}")
 
-# App Layout and Functionality
-st.title('Movie Reviews Sentiment Analysis')
+def predict_movie_sentiment(text):
+    processed_text = text_preprocessing(text)
+    sentiment_score = analyzer.polarity_scores(processed_text)
 
-# Input text area
-user_input = st.text_area("Enter the text for movie review:", "I don't like this product.")
+st.title('Movie Reviews App')
+
+user_input = st.text_area("Enter the text for movie review:" , "I don't like this product.")
 
 if st.button('Predict Sentiment'):
-    if not user_input.strip():
-        st.warning("Please enter a valid review.")
-    else:
-        predict_feedback(user_input)
+    prediction = predict_feedback(user_input)
+    # No need to write prediction here as it's just the function call
 
-# Custom Styling for the App
 st.markdown(
     """
     <style>
