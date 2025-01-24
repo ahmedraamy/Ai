@@ -20,8 +20,8 @@ try:
     dt = pickle.load(open('movie_reviews/app2/artifacts/dt.pkl', 'rb'))
     svc = pickle.load(open('movie_reviews/app2/artifacts/svc.pkl', 'rb'))
     tf = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))
-    #st.success("Other models loaded successfully!")
-    #st.empty()
+    st.success("models loaded successfully!")
+    st.empty()
 except FileNotFoundError as e:
     st.error(f"Model file not found: {e}")
     lr, dt, svc, tf = None, None, None,None
