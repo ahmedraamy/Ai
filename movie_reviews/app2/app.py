@@ -28,6 +28,10 @@ except FileNotFoundError as e:
 if not (tf_model or lr or dt or svc):
     st.error("No models could be loaded. Please check the model files and paths.")
     st.stop() 
+
+st.title('Movie Reviews App')
+st.write("All models loaded successfully!")
+
 # Stopwords setup
 stop_words = stopwords.words('english')
 stop_words.remove('not')
