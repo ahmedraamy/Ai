@@ -10,7 +10,7 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 from transformers import AutoTokenizer  # Add this import for tokenizer
 
-nltk.download('punkt')
+nltk.download('punkt_tab')
 nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
