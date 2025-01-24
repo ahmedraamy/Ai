@@ -18,13 +18,13 @@ nltk.download('wordnet')  # Add this line to download WordNet
 nltk.download('omw-1.4')  # Add this line to download Open Multilingual Wordnet
 
 # Load model
-model = load_model('movie_reviews/app1/artifacts/model.keras')
+model = load_model(r'movie_reviews/app1/artifacts/model.keras')
 
 # Load tokenizer
 tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
 
 # Ensure the tokenizer is saved (this step is optional based on your use case)
-with open('movie_reviews/app1/artifacts/tokenizer.pkl', 'wb') as f:
+with open(r'movie_reviews/app1/artifacts/tokenizer.pkl', 'wb') as f:
     pickle.dump(tokenizer, f)
 
 # NLTK stopwords setup
