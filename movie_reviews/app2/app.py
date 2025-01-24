@@ -14,11 +14,14 @@ nltk.download('wordnet')  # Add this line to download WordNet
 nltk.download('omw-1.4')  # Add this line to download Open Multilingual Wordnet
 
 # Load pre-trained models (if applicable)
+from joblib import load
+tf = load('movie_reviews/app2/artifacts/tf.pkl')
+
 try:
     lr = pickle.load(open(r'movie_reviews/app2/artifacts/lr.pkl', 'rb'))
     dt = pickle.load(open(r'movie_reviews/app2/artifacts/dt.pkl', 'rb'))
     svc = pickle.load(open(r'movie_reviews/app2/artifacts/svc.pkl', 'rb'))
-    tf = pickle.load(open(r'movie_reviews/app2/artifacts/tf.pkl', 'rb'))
+   # tf = pickle.load(open(r'movie_reviews/app2/artifacts/tf.pkl', 'rb'))
 
     # Pre-processing setup
     stop_words = stopwords.words('english')  # Moved inside the try block
