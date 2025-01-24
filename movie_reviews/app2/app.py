@@ -18,7 +18,7 @@ from tensorflow.keras.models import load_model
 
 try:
     # Load the Keras model using TensorFlow's `load_model` method
-    tf_model = load_model('movie_reviews/app2/artifacts/tf_model')  # Update the path as needed
+    tf = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb')  # Update the path as needed
     st.success("TensorFlow model loaded successfully!")
 except Exception as e:
     st.error(f"An error occurred while loading the TensorFlow model: {e}")
