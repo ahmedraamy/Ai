@@ -8,24 +8,21 @@ from nltk.stem import WordNetLemmatizer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import tensorflow as tf
 from tensorflow.keras.models import load_model
-from transformers import AutoTokenizer  # Add this import for tokenizer
-
+from transformers import AutoTokenizer
 
 # Download necessary NLTK resources
 nltk.download('punkt')
 nltk.download('stopwords')
-nltk.download('wordnet')  # Add this line to download WordNet
-nltk.download('omw-1.4')  # Add this line to download Open Multilingual Wordnet
+nltk.download('wordnet')
+nltk.download('omw-1.4')
 
-# Load model
-model = load_model(r'movie_reviews/app1/artifacts/model.keras')
-
-# Load tokenizer
-tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
-
-# Ensure the tokenizer is saved (this step is optional based on your use case)
-with open(r'movie_reviews/app1/artifacts/tokenizer.pkl', 'wb') as f:
-    pickle.dump(tokenizer, f)
+# Load Keras model (if needed) and tokenizer
+try:
+    model = load_model(r'movie_reviews/app1/artifacts/model.keras')
+    tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')  # BERT tokenizer
+except Exception as e:
+    st.error(f"Error loading models: {e}")
+    st.stop()
 
 # NLTK stopwords setup
 stop_words = stopwords.words('english')
@@ -35,13 +32,13 @@ stop_words.remove('no')
 lemmatizer = WordNetLemmatizer()
 analyzer = SentimentIntensityAnalyzer()
 
+# Text preprocessing
 def text_preprocessing(text):
     text = text.lower()
     text = re.sub('[^a-zA-Z]', ' ', text)
     try:
         text = word_tokenize(text)
     except LookupError:
-        # Handle the case where punkt data is missing
         nltk.download('punkt')
         text = word_tokenize(text)
     text = [word for word in text if word not in stop_words]
@@ -49,6 +46,7 @@ def text_preprocessing(text):
     text = ' '.join(text)
     return text
 
+# Sentiment prediction
 def predict_feedback(text):
     processed_text = text_preprocessing(text)
     sentiment_score = analyzer.polarity_scores(processed_text)
@@ -57,20 +55,22 @@ def predict_feedback(text):
         sentiment = 'Positive'
     else:
         sentiment = 'Negative'
-    
+
     # Display sentiment result
     st.markdown(
         f"<p style='color: red; font-weight: bold;'>The review is <b>{sentiment}</b></p>",
         unsafe_allow_html=True,
     )
 
+# Streamlit app
 st.title('Movie Reviews App')
 
-user_input = st.text_area("Enter the text for movie review:" , "I don't like this product.")
+user_input = st.text_area("Enter the text for movie review:", "I don't like this product.")
 
 if st.button('Predict Sentiment'):
     prediction = predict_feedback(user_input)
 
+# Custom Styling for the App
 st.markdown(
     """
     <style>
