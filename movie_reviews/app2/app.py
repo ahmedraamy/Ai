@@ -8,7 +8,7 @@ from nltk.stem import WordNetLemmatizer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 # Download necessary NLTK resources
-nltk.download('punkt_tab')
+nltk.download('punkt')  # Corrected from 'punkt_tab' to 'punkt'
 nltk.download('stopwords')
 
 # Load pre-trained models (if applicable)
@@ -17,7 +17,7 @@ try:
     tf = pickle.load(open(r'movie_reviews/app2/artifacts/tf.pkl', 'rb'))
     dt = pickle.load(open(r'movie_reviews/app2/artifacts/dt.pkl', 'rb'))
     svc = pickle.load(open(r'movie_reviews/app2/artifacts/svc.pkl', 'rb'))
-except ModuleNotFoundError as e:
+except FileNotFoundError as e:
     st.error(f"Error loading models: {e}")
     st.stop()
 
