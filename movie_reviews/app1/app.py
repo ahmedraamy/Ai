@@ -10,6 +10,10 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 from transformers import AutoTokenizer  # Add this import for tokenizer
 
+
+# Download necessary NLTK resources
+nltk.download('punkt')
+nltk.download('stopwords')
 # Load model
 model = load_model('movie_reviews/app1/artifacts/model.keras')
 
