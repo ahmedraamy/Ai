@@ -55,7 +55,7 @@ def load_models():
     models = {}
     try:
         # Load the TensorFlow/Keras model
-        models['tf_model'] = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))
+        models['tf'] = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))
         
         # Load other models
         models['lr'] = pickle.load(open('movie_reviews/app2/artifacts/lr.pkl', 'rb'))
@@ -80,7 +80,7 @@ models = load_models()
 
 if models:
     # Extract the models from the dictionary
-    tf_model = models['tf_model']
+    tf_model = models['tf']
     lr = models['lr']
     dt = models['dt']
     svc = models['svc']
