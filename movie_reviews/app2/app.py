@@ -17,21 +17,36 @@ nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
 # Initialize models to None
+# Ensure all variables are initialized
 tf_model, lr, dt, svc = None, None, None, None
 
-# Load models
+# Load models with error handling
 try:
-    tf_model = pickle.load(open('artifacts/tf.pkl', 'rb'))  # TensorFlow model
-    lr = pickle.load(open('artifacts/lr.pkl', 'rb'))        # Logistic Regression model
-    dt = pickle.load(open('artifacts/dt.pkl', 'rb'))        # Decision Tree model
-    svc = pickle.load(open('artifacts/svc.pkl', 'rb'))      # Support Vector Classifier
-except FileNotFoundError as e:
-    st.error(f"Model file not found: {e}")
+    tf_model = load_tensorflow_model('path/to/tf_model')
+except Exception as e:
+    print(f"Error loading TensorFlow model: {e}")
 
-# Ensure at least one model is loaded
-if not (tf_model or lr or dt or svc):
-    st.error("No models could be loaded. Please check the model files and paths.")
-    st.stop() 
+try:
+    lr = load_linear_regression_model('path/to/lr_model')
+except Exception as e:
+    print(f"Error loading Linear Regression model: {e}")
+
+try:
+    dt = load_decision_tree_model('path/to/dt_model')
+except Exception as e:
+    print(f"Error loading Decision Tree model: {e}")
+
+try:
+    svc = load_support_vector_classifier('path/to/svc_model')
+except Exception as e:
+    print(f"Error loading SVC model: {e}")
+
+# Check if at least one model is loaded
+if any(model is not None for model in [tf_model, lr, dt, svc]):
+    print("At least one model is loaded")
+else:
+    print("No models loaded")
+
 
 # Stopwords setup
 stop_words = stopwords.words('english')
