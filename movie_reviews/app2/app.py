@@ -6,13 +6,22 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-import os
 
-# Ensure necessary NLTK packages are downloaded
+# Download necessary NLTK resources
 nltk.download('punkt')
 nltk.download('stopwords')
 
-# Load stop words and lemmatizer
+# Load pre-trained models (if applicable)
+try:
+    lr = pickle.load(open('movie_reviews/app2/artifacts/lr.pkl', 'rb'))
+    tf = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))
+    dt = pickle.load(open('movie_reviews/app2/artifacts/dt.pkl', 'rb'))
+    svc = pickle.load(open('movie_reviews/app2/artifacts/svc.pkl', 'rb'))
+except ModuleNotFoundError as e:
+    st.error(f"Error loading models: {e}")
+    st.stop()
+
+# Pre-processing setup
 stop_words = stopwords.words('english')
 stop_words.remove('not')
 stop_words.remove('no')
@@ -20,41 +29,10 @@ stop_words.remove('no')
 lemmatizer = WordNetLemmatizer()
 analyzer = SentimentIntensityAnalyzer()
 
-# Directory for your model files
-model_directory = 'movie_reviews/app2/artifacts/'
-
-# Load pre-trained models (if available)
-try:
-    # Check if the required model files exist before loading
-    if not os.path.exists(os.path.join(model_directory, 'lr.pkl')):
-        st.error("Logistic Regression model (lr.pkl) not found!")
-        st.stop()
-
-    if not os.path.exists(os.path.join(model_directory, 'tf.pkl')):
-        st.error("TF-IDF model (tf.pkl) not found!")
-        st.stop()
-
-    if not os.path.exists(os.path.join(model_directory, 'dt.pkl')):
-        st.error("Decision Tree model (dt.pkl) not found!")
-        st.stop()
-
-    if not os.path.exists(os.path.join(model_directory, 'svc.pkl')):
-        st.error("SVM model (svc.pkl) not found!")
-        st.stop()
-
-    lr = pickle.load(open(os.path.join(model_directory, 'lr.pkl'), 'rb'))
-    tf = pickle.load(open(os.path.join(model_directory, 'tf.pkl'), 'rb'))
-    dt = pickle.load(open(os.path.join(model_directory, 'dt.pkl'), 'rb'))
-    svc = pickle.load(open(os.path.join(model_directory, 'svc.pkl'), 'rb'))
-
-except FileNotFoundError as e:
-    st.error(f"Error loading model: {e}. Make sure the model files are in the correct directory.")
-    st.stop()
-
-# Text preprocessing function
+# Preprocess the input text
 def text_preprocessing(text):
-    text = text.lower()  # Convert to lowercase
-    text = re.sub('[^a-zA-Z]', ' ', text)  # Remove non-alphabetic characters
+    text = text.lower()  # Convert text to lowercase
+    text = re.sub('[^a-zA-Z]', ' ', text)  # Remove non-alphabetical characters
     text = word_tokenize(text)  # Tokenize text into words
     text = [word for word in text if word not in stop_words]  # Remove stopwords
     text = [lemmatizer.lemmatize(word) for word in text]  # Lemmatize words
@@ -64,31 +42,28 @@ def text_preprocessing(text):
 # Sentiment prediction function
 def predict_feedback(text):
     processed_text = text_preprocessing(text)  # Preprocess the text
-    sentiment_score = analyzer.polarity_scores(processed_text)  # Analyze sentiment
-    
-    # Determine sentiment based on compound score
+    sentiment_score = analyzer.polarity_scores(processed_text)  # Get sentiment scores
+
     if sentiment_score['compound'] > 0:
         sentiment = 'Positive'
     else:
         sentiment = 'Negative'
 
-    # Display the sentiment result on Streamlit
+    # Display the sentiment result
     st.markdown(
         f"<p style='color: red; font-weight: bold;'>The review is <b>{sentiment}</b></p>",
         unsafe_allow_html=True,
     )
 
-# Streamlit UI
+# App Layout and Functionality
 st.title('Movie Reviews App')
 
-# User input text area
 user_input = st.text_area("Enter the text for movie review:", "I don't like this product.")
 
-# Button to trigger sentiment prediction
 if st.button('Predict Sentiment'):
-    prediction = predict_feedback(user_input)
+    prediction = predict_feedback(user_input)  # Call the prediction function
 
-# Custom CSS for styling
+# Custom Styling for the App
 st.markdown(
     """
     <style>
@@ -116,7 +91,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Footer
 st.markdown(
     """
     <div style='text-align: center; color: #1E90FF; font-size: 12px;'>
