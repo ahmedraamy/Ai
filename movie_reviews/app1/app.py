@@ -11,12 +11,12 @@ from tensorflow.keras.models import load_model
 from transformers import AutoTokenizer  # Add this import for tokenizer
 
 # Load model
-model = load_model('model.keras')
+model = load_model('movie_reviews/app1/artifacts/model.keras')
 
 # Load tokenizer
 tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
 
-with open('tokenizer.pkl', 'wb') as f:
+with open('movie_reviews/app1/artifacts/tokenizer.pkl', 'wb') as f:
     pickle.dump(tokenizer, f)
 
 nltk.download('stopwords')
