@@ -6,33 +6,39 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+from keras.models import load_model
 
 # Download necessary NLTK resources
-nltk.download('punkt')  # Corrected from 'punkt_tab' to 'punkt'
+nltk.download('punkt')
 nltk.download('stopwords')
-nltk.download('wordnet')  # Add this line to download WordNet
-nltk.download('omw-1.4')  # Add this line to download Open Multilingual Wordnet
+nltk.download('wordnet')
+nltk.download('omw-1.4')
 
-# Load pre-trained models (if applicable)
-from keras.models import load_model
-tf = load_model('movie_reviews/app2/artifacts/tf.pkl', compile=False)
-
+# Load pre-trained models and setup pre-processing
 try:
-    lr = pickle.load(open(r'movie_reviews/app2/artifacts/lr.pkl', 'rb'))
-    dt = pickle.load(open(r'movie_reviews/app2/artifacts/dt.pkl', 'rb'))
-    svc = pickle.load(open(r'movie_reviews/app2/artifacts/svc.pkl', 'rb'))
-   # tf = pickle.load(open(r'movie_reviews/app2/artifacts/tf.pkl', 'rb'))
+    # Load the TensorFlow/Keras model (update path if necessary)
+    tf = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))
+
+    # Load other models
+    lr = pickle.load(open('movie_reviews/app2/artifacts/lr.pkl', 'rb'))
+    dt = pickle.load(open('movie_reviews/app2/artifacts/dt.pkl', 'rb'))
+    svc = pickle.load(open('movie_reviews/app2/artifacts/svc.pkl', 'rb'))
 
     # Pre-processing setup
-    stop_words = stopwords.words('english')  # Moved inside the try block
-    stop_words.remove('not')
-    stop_words.remove('no')
+    stop_words = stopwords.words('english')
+    if 'not' in stop_words:
+        stop_words.remove('not')
+    if 'no' in stop_words:
+        stop_words.remove('no')
 
     lemmatizer = WordNetLemmatizer()
     analyzer = SentimentIntensityAnalyzer()
 
 except FileNotFoundError as e:
-    st.error(f"Error loading models: {e}")
+    st.error(f"Model file not found: {e}")
+    st.stop()
+except Exception as e:
+    st.error(f"An error occurred while loading models: {e}")
     st.stop()
 
 # Pre-process the input text
@@ -55,19 +61,24 @@ def predict_feedback(text):
     else:
         sentiment = 'Negative'
 
-    # Display the sentiment result
+    # Display the sentiment result and score
     st.markdown(
         f"<p style='color: red; font-weight: bold;'>The review is <b>{sentiment}</b></p>",
         unsafe_allow_html=True,
     )
+    st.write(f"Sentiment Score: {sentiment_score}")
 
 # App Layout and Functionality
-st.title('Movie Reviews App')
+st.title('Movie Reviews Sentiment Analysis')
 
+# Input text area
 user_input = st.text_area("Enter the text for movie review:", "I don't like this product.")
 
 if st.button('Predict Sentiment'):
-    prediction = predict_feedback(user_input)  # Call the prediction function
+    if not user_input.strip():
+        st.warning("Please enter a valid review.")
+    else:
+        predict_feedback(user_input)
 
 # Custom Styling for the App
 st.markdown(
