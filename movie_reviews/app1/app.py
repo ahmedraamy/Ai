@@ -12,10 +12,10 @@ from transformers import AutoTokenizer  # Add this import for tokenizer
 
 
 # Download necessary NLTK resources
-nltk.download('punkt', quiet=True)
-nltk.download('stopwords', quiet=True)
-nltk.download('wordnet', quiet=True)  # Add this line to download WordNet
-nltk.download('omw-1.4', quiet=True)  # Add this line to download Open Multilingual Wordnet
+nltk.download('punkt')
+nltk.download('stopwords')
+nltk.download('wordnet')  # Add this line to download WordNet
+nltk.download('omw-1.4')  # Add this line to download Open Multilingual Wordnet
 
 # Load model
 model = load_model('movie_reviews/app1/artifacts/model.keras')
