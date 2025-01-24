@@ -12,20 +12,20 @@ from transformers import AutoTokenizer  # Add this import for tokenizer
 
 
 # Download necessary NLTK resources
-nltk.download('punkt')
-nltk.download('stopwords')
+nltk.download('punkt', quiet=True)
+nltk.download('stopwords', quiet=True)
+
 # Load model
 model = load_model('movie_reviews/app1/artifacts/model.keras')
 
 # Load tokenizer
 tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
 
+# Ensure the tokenizer is saved (this step is optional based on your use case)
 with open('movie_reviews/app1/artifacts/tokenizer.pkl', 'wb') as f:
     pickle.dump(tokenizer, f)
 
-nltk.download('stopwords')
-nltk.download('punkt')
-
+# NLTK stopwords setup
 stop_words = stopwords.words('english')
 stop_words.remove('not')
 stop_words.remove('no')
@@ -50,15 +50,12 @@ def predict_feedback(text):
         sentiment = 'Positive'
     else:
         sentiment = 'Negative'
-    # Call st.markdown only once to display the sentiment analysis result
+    
+    # Display sentiment result
     st.markdown(
         f"<p style='color: red; font-weight: bold;'>The review is <b>{sentiment}</b></p>",
         unsafe_allow_html=True,
     )
-
-def predict_movie_sentiment(text):
-    processed_text = text_preprocessing(text)
-    sentiment_score = analyzer.polarity_scores(processed_text)
 
 st.title('Movie Reviews App')
 
@@ -66,7 +63,6 @@ user_input = st.text_area("Enter the text for movie review:" , "I don't like thi
 
 if st.button('Predict Sentiment'):
     prediction = predict_feedback(user_input)
-    # No need to write prediction here as it's just the function call
 
 st.markdown(
     """
