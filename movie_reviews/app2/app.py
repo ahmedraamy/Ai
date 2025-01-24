@@ -6,9 +6,13 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import tensorflow as tf
+from tensorflow.keras.models import load_model
+from transformers import AutoTokenizer
 
 # NLTK downloads
 nltk.download('punkt')
+nltk.download('punkt_tab')
 nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
@@ -28,9 +32,6 @@ except FileNotFoundError as e:
 if not (tf_model or lr or dt or svc):
     st.error("No models could be loaded. Please check the model files and paths.")
     st.stop() 
-
-st.title('Movie Reviews App')
-st.write("All models loaded successfully!")
 
 # Stopwords setup
 stop_words = stopwords.words('english')
