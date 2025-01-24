@@ -14,21 +14,28 @@ nltk.download('wordnet')
 nltk.download('omw-1.4')
 
 # Load models
-try:
-    # Load the TensorFlow/Keras model (update path if necessary)
-    tf = pickle.load(open(r'movie_reviews/app2/artifacts/tf.pkl', 'rb'))
+from tensorflow.keras.models import load_model
 
-    # Load other models
+try:
+    # Load the Keras model using TensorFlow's `load_model` method
+    tf_model = load_model('movie_reviews/app2/artifacts/tf_model')  # Update the path as needed
+    st.success("TensorFlow model loaded successfully!")
+except Exception as e:
+    st.error(f"An error occurred while loading the TensorFlow model: {e}")
+    tf_model = None
+
+# Load other models (pickle)
+try:
     lr = pickle.load(open('movie_reviews/app2/artifacts/lr.pkl', 'rb'))
     dt = pickle.load(open('movie_reviews/app2/artifacts/dt.pkl', 'rb'))
     svc = pickle.load(open('movie_reviews/app2/artifacts/svc.pkl', 'rb'))
-
+    st.success("Other models loaded successfully!")
 except FileNotFoundError as e:
     st.error(f"Model file not found: {e}")
-    tf, lr, dt, svc = None, None, None, None
+    lr, dt, svc = None, None, None
 except Exception as e:
-    st.error(f"An error occurred while loading the models: {e}")
-    tf, lr, dt, svc = None, None, None, None
+    st.error(f"An error occurred while loading other models: {e}")
+    lr, dt, svc = None, None, None
 
 # Initialize stopwords and other NLP tools
 try:
