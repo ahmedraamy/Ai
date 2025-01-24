@@ -21,6 +21,7 @@ try:
     svc = pickle.load(open('movie_reviews/app2/artifacts/svc.pkl', 'rb'))
     tf = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))
     st.success("models loaded successfully!")
+    time.sleep(1)
     st.empty()
 except FileNotFoundError as e:
     st.error(f"Model file not found: {e}")
