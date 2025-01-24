@@ -17,6 +17,12 @@ nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
 
+
+# Load models
+tf_model = None
+lr = None
+dt = None
+svc = None
 # Load models
 try:
     # Load the TensorFlow/Keras model (update path if necessary)
