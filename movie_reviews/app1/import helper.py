@@ -3,7 +3,7 @@ import streamlit as st
 import pickle
 
 
-model = pickle.load(open("artifacts/lr.pkl", 'rb'))
+model = pickle.load(open("movie_reviews/app1/artifacts/lr.pkl", 'rb'))
 
 
 
