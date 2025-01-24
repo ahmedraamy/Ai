@@ -14,8 +14,8 @@ nltk.download('wordnet')  # Add this line to download WordNet
 nltk.download('omw-1.4')  # Add this line to download Open Multilingual Wordnet
 
 # Load pre-trained models (if applicable)
-from joblib import load
-tf = load('movie_reviews/app2/artifacts/tf.pkl')
+from keras.models import load_model
+tf = load_model('movie_reviews/app2/artifacts/tf.pkl', compile=False)
 
 try:
     lr = pickle.load(open(r'movie_reviews/app2/artifacts/lr.pkl', 'rb'))
