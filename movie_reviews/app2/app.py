@@ -7,18 +7,17 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import tensorflow as tf
+from tensorflow.keras.models import load_model
 from transformers import AutoTokenizer  # Add this import for tokenizer
 
-# Download necessary NLTK resources
 nltk.download('punkt_tab')
-nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
-
+# Load models
 try:
     # Load the TensorFlow/Keras model (update path if necessary)
-    tf_model = pickle.load(open('artifacts/tf.pkl', 'rb'))  # Changed `tf` to `tf_model`
+    tf = pickle.load(open('artifacts/tf.pkl', 'rb'))
 
     # Load other models
     lr = pickle.load(open('artifacts/lr.pkl', 'rb'))
@@ -30,7 +29,9 @@ except FileNotFoundError as e:
 except Exception as e:
     st.error(f"An error occurred while loading the models: {e}")
 
-# Initialize stopwords and other NLP tools
+nltk.download('stopwords')
+nltk.download('punkt')
+
 stop_words = stopwords.words('english')
 stop_words.remove('not')
 stop_words.remove('no')
@@ -38,7 +39,6 @@ stop_words.remove('no')
 lemmatizer = WordNetLemmatizer()
 analyzer = SentimentIntensityAnalyzer()
 
-# Text Preprocessing function
 def text_preprocessing(text):
     text = text.lower()
     text = re.sub('[^a-zA-Z]', ' ', text)
@@ -48,7 +48,6 @@ def text_preprocessing(text):
     text = ' '.join(text)
     return text
 
-# Predict Sentiment function
 def predict_feedback(text):
     processed_text = text_preprocessing(text)
     sentiment_score = analyzer.polarity_scores(processed_text)
@@ -57,28 +56,24 @@ def predict_feedback(text):
         sentiment = 'Positive'
     else:
         sentiment = 'Negative'
-    
-    # Display result using Streamlit markdown
+    # Call st.markdown only once to display the sentiment analysis result
     st.markdown(
         f"<p style='color: red; font-weight: bold;'>The review is <b>{sentiment}</b></p>",
         unsafe_allow_html=True,
     )
 
-# Main App Interface
+def predict_movie_sentiment(text):
+    processed_text = text_preprocessing(text)
+    sentiment_score = analyzer.polarity_scores(processed_text)
+
 st.title('Movie Reviews App')
 
-# Text area for user input
-user_input = st.text_area("Enter the text for movie review:", "I don't like this product.")
+user_input = st.text_area("Enter the text for movie review:" , "I don't like this product.")
 
-# Button to trigger sentiment prediction
 if st.button('Predict Sentiment'):
-    # Check if at least one model is loaded
-    if tf_model or lr or dt or svc:
-        prediction = predict_feedback(user_input)
-    else:
-        st.error("No model is loaded. Please check the model files.")
-        
-# Custom Styling for Streamlit app
+    prediction = predict_feedback(user_input)
+    # No need to write prediction here as it's just the function call
+
 st.markdown(
     """
     <style>
@@ -106,7 +101,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Footer
 st.markdown(
     """
     <div style='text-align: center; color: #1E90FF; font-size: 12px;'>
