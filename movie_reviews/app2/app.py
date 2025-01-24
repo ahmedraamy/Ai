@@ -2,61 +2,40 @@ import streamlit as st
 import pickle
 import re
 import nltk
-import time
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import tensorflow as tf
+from tensorflow.keras.models import load_model
+from transformers import AutoTokenizer  # Add this import for tokenizer
 
-# Download necessary NLTK resources
-nltk.download('punkt')
+nltk.download('punkt_tab')
 nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
-
-# Load models
-from tensorflow.keras.models import load_model
-
-# Load TensorFlow model using pickle (change the path accordingly)
-try:
-    tf = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))  # Update the path as needed
-    st.success("TensorFlow model loaded successfully!")
-    time.sleep(1)  # Wait for 1 second
-    st.empty()  # Remove the success message
-except Exception as e:
-    st.error(f"An error occurred while loading the TensorFlow model: {e}")
-    tf = None
-
-# Load other models (pickle)
+# Load model
 try:
     lr = pickle.load(open('movie_reviews/app2/artifacts/lr.pkl', 'rb'))
     dt = pickle.load(open('movie_reviews/app2/artifacts/dt.pkl', 'rb'))
     svc = pickle.load(open('movie_reviews/app2/artifacts/svc.pkl', 'rb'))
+    tf = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))
     st.success("Other models loaded successfully!")
-    time.sleep(1)  # Wait for 1 second
-    st.empty()  # Remove the success message
+    st.empty()
 except FileNotFoundError as e:
-    st.error(f"Model file not found: {e}")
-    lr, dt, svc = None, None, None
-except Exception as e:
-    st.error(f"An error occurred while loading other models: {e}")
-    lr, dt, svc = None, None, None
+st.error(f"Model file not found: {e}")
+lr, dt, svc, tf = None, None, None,None
 
-# Initialize stopwords and other NLP tools
-try:
-    stop_words = stopwords.words('english')
-    if 'not' in stop_words:
-        stop_words.remove('not')
-    if 'no' in stop_words:
-        stop_words.remove('no')
-except Exception as e:
-    st.error(f"Error initializing stopwords: {e}")
-    stop_words = []
+nltk.download('stopwords')
+nltk.download('punkt')
+
+stop_words = stopwords.words('english')
+stop_words.remove('not')
+stop_words.remove('no')
 
 lemmatizer = WordNetLemmatizer()
 analyzer = SentimentIntensityAnalyzer()
 
-# Text Preprocessing function
 def text_preprocessing(text):
     text = text.lower()
     text = re.sub('[^a-zA-Z]', ' ', text)
@@ -66,7 +45,6 @@ def text_preprocessing(text):
     text = ' '.join(text)
     return text
 
-# Predict Sentiment function
 def predict_feedback(text):
     processed_text = text_preprocessing(text)
     sentiment_score = analyzer.polarity_scores(processed_text)
@@ -75,27 +53,24 @@ def predict_feedback(text):
         sentiment = 'Positive'
     else:
         sentiment = 'Negative'
-    
-    # Display result using Streamlit markdown
+    # Call st.markdown only once to display the sentiment analysis result
     st.markdown(
         f"<p style='color: red; font-weight: bold;'>The review is <b>{sentiment}</b></p>",
         unsafe_allow_html=True,
     )
 
-# Main App Interface
+def predict_movie_sentiment(text):
+    processed_text = text_preprocessing(text)
+    sentiment_score = analyzer.polarity_scores(processed_text)
+
 st.title('Movie Reviews App')
 
-# Text area for user input
-user_input = st.text_area("Enter the text for movie review:", "I don't like this product.")
+user_input = st.text_area("Enter the text for movie review:" , "I don't like this product.")
 
-# Button to trigger sentiment prediction
 if st.button('Predict Sentiment'):
-    if tf or lr or dt or svc:
-        predict_feedback(user_input)
-    else:
-        st.error("Models could not be loaded. Please check the configuration.")
+    prediction = predict_feedback(user_input)
+    # No need to write prediction here as it's just the function call
 
-# Custom Styling for Streamlit app
 st.markdown(
     """
     <style>
@@ -120,4 +95,14 @@ st.markdown(
     }
     </style>
     """,
+    unsafe_allow_html=True,
+)
+
+st.markdown(
+    """
+    <div style='text-align: center; color: #1E90FF; font-size: 12px;'>
+        <p>Created by Ahmed Ramy</p>
+    </div>
+    """,
+    unsafe_allow_html=True,
 )
