@@ -24,11 +24,6 @@ try:
     dt = pickle.load(open('artifacts/dt.pkl', 'rb'))
     svc = pickle.load(open('artifacts/svc.pkl', 'rb'))
 
-except FileNotFoundError as e:
-    st.error(f"Model file not found: {e}")
-except Exception as e:
-    st.error(f"An error occurred while loading the models: {e}")
-
 nltk.download('stopwords')
 nltk.download('punkt')
 
