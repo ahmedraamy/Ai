@@ -18,16 +18,19 @@ try:
     dt = pickle.load(open(r'movie_reviews/app2/artifacts/dt.pkl', 'rb'))
     svc = pickle.load(open(r'movie_reviews/app2/artifacts/svc.pkl', 'rb'))
 
+    # Pre-processing setup
+    stop_words = stopwords.words('english')  # Moved inside the try block
+    stop_words.remove('not')
+    stop_words.remove('no')
 
-# Pre-processing setup
-stop_words = stopwords.words('english')
-stop_words.remove('not')
-stop_words.remove('no')
+    lemmatizer = WordNetLemmatizer()
+    analyzer = SentimentIntensityAnalyzer()
 
-lemmatizer = WordNetLemmatizer()
-analyzer = SentimentIntensityAnalyzer()
+except FileNotFoundError as e:
+    st.error(f"Error loading models: {e}")
+    st.stop()
 
-# Preprocess the input text
+# Pre-process the input text
 def text_preprocessing(text):
     text = text.lower()  # Convert text to lowercase
     text = re.sub('[^a-zA-Z]', ' ', text)  # Remove non-alphabetical characters
