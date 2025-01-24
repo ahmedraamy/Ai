@@ -2,6 +2,7 @@ import streamlit as st
 import pickle
 import re
 import nltk
+import time
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
@@ -10,26 +11,26 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 from transformers import AutoTokenizer  # Add this import for tokenizer
 
-nltk.download('punkt_tab')
+# Download necessary NLTK resources
+nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
-# Load model
+
+# Load models
 try:
     lr = pickle.load(open('movie_reviews/app2/artifacts/lr.pkl', 'rb'))
     dt = pickle.load(open('movie_reviews/app2/artifacts/dt.pkl', 'rb'))
     svc = pickle.load(open('movie_reviews/app2/artifacts/svc.pkl', 'rb'))
-    tf = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))
-    st.success("models loaded successfully!")
+    tf_model = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))
+    st.success("Models loaded successfully!")
     time.sleep(1)
     st.empty()
 except FileNotFoundError as e:
     st.error(f"Model file not found: {e}")
-    lr, dt, svc, tf = None, None, None,None
+    lr, dt, svc, tf_model = None, None, None, None
 
-nltk.download('stopwords')
-nltk.download('punkt')
-
+# Initialize stopwords and other NLP tools
 stop_words = stopwords.words('english')
 stop_words.remove('not')
 stop_words.remove('no')
@@ -54,24 +55,24 @@ def predict_feedback(text):
         sentiment = 'Positive'
     else:
         sentiment = 'Negative'
+
     # Call st.markdown only once to display the sentiment analysis result
     st.markdown(
         f"<p style='color: red; font-weight: bold;'>The review is <b>{sentiment}</b></p>",
         unsafe_allow_html=True,
     )
 
-def predict_movie_sentiment(text):
-    processed_text = text_preprocessing(text)
-    sentiment_score = analyzer.polarity_scores(processed_text)
-
 st.title('Movie Reviews App')
 
-user_input = st.text_area("Enter the text for movie review:" , "I don't like this product.")
+user_input = st.text_area("Enter the text for movie review:", "I don't like this product.")
 
 if st.button('Predict Sentiment'):
-    prediction = predict_feedback(user_input)
-    # No need to write prediction here as it's just the function call
+    if tf_model or lr or dt or svc:  # Ensure at least one model is loaded
+        predict_feedback(user_input)
+    else:
+        st.error("Models could not be loaded. Please check the configuration.")
 
+# Custom Styling for Streamlit app
 st.markdown(
     """
     <style>
@@ -99,6 +100,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# Footer
 st.markdown(
     """
     <div style='text-align: center; color: #1E90FF; font-size: 12px;'>
