@@ -13,10 +13,10 @@ nltk.download('stopwords')
 
 # Load pre-trained models (if applicable)
 try:
-    lr = pickle.load(open('movie_reviews/app2/artifacts/lr.pkl', 'rb'))
-    tf = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))
-    dt = pickle.load(open('movie_reviews/app2/artifacts/dt.pkl', 'rb'))
-    svc = pickle.load(open('movie_reviews/app2/artifacts/svc.pkl', 'rb'))
+    lr = pickle.load(open(r'movie_reviews/app2/artifacts/lr.pkl', 'rb'))
+    tf = pickle.load(open(r'movie_reviews/app2/artifacts/tf.pkl', 'rb'))
+    dt = pickle.load(open(r'movie_reviews/app2/artifacts/dt.pkl', 'rb'))
+    svc = pickle.load(open(r'movie_reviews/app2/artifacts/svc.pkl', 'rb'))
 except ModuleNotFoundError as e:
     st.error(f"Error loading models: {e}")
     st.stop()
