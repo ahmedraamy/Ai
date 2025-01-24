@@ -17,6 +17,8 @@ try:
     tf = pickle.load(open(r'movie_reviews/app2/artifacts/tf.pkl', 'rb'))
     dt = pickle.load(open(r'movie_reviews/app2/artifacts/dt.pkl', 'rb'))
     svc = pickle.load(open(r'movie_reviews/app2/artifacts/svc.pkl', 'rb'))
+
+
 # Pre-processing setup
 stop_words = stopwords.words('english')
 stop_words.remove('not')
