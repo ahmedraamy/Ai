@@ -6,18 +6,15 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
-import tensorflow as tf
-from tensorflow.keras.models import load_model
-from transformers import AutoTokenizer  # Add this import for tokenizer
+from keras.models import load_model
 
 # Download necessary NLTK resources
-nltk.download('punkt_tab')
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
 
-# Load models
+# Load pre-trained models and setup pre-processing
 try:
     # Load the TensorFlow/Keras model (update path if necessary)
     tf = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))
@@ -27,56 +24,63 @@ try:
     dt = pickle.load(open('movie_reviews/app2/artifacts/dt.pkl', 'rb'))
     svc = pickle.load(open('movie_reviews/app2/artifacts/svc.pkl', 'rb'))
 
+    # Pre-processing setup
+    stop_words = stopwords.words('english')
+    if 'not' in stop_words:
+        stop_words.remove('not')
+    if 'no' in stop_words:
+        stop_words.remove('no')
+
+    lemmatizer = WordNetLemmatizer()
+    analyzer = SentimentIntensityAnalyzer()
+
 except FileNotFoundError as e:
     st.error(f"Model file not found: {e}")
+    st.stop()
 except Exception as e:
-    st.error(f"An error occurred while loading the models: {e}")
+    st.error(f"An error occurred while loading models: {e}")
+    st.stop()
 
-# Initialize stopwords and other NLP tools
-stop_words = stopwords.words('english')
-stop_words.remove('not')
-stop_words.remove('no')
-
-lemmatizer = WordNetLemmatizer()
-analyzer = SentimentIntensityAnalyzer()
-
-# Text Preprocessing function
+# Pre-process the input text
 def text_preprocessing(text):
-    text = text.lower()
-    text = re.sub('[^a-zA-Z]', ' ', text)
-    text = word_tokenize(text)
-    text = [word for word in text if word not in stop_words]
-    text = [lemmatizer.lemmatize(word) for word in text]
-    text = ' '.join(text)
+    text = text.lower()  # Convert text to lowercase
+    text = re.sub('[^a-zA-Z]', ' ', text)  # Remove non-alphabetical characters
+    text = word_tokenize(text)  # Tokenize text into words
+    text = [word for word in text if word not in stop_words]  # Remove stopwords
+    text = [lemmatizer.lemmatize(word) for word in text]  # Lemmatize words
+    text = ' '.join(text)  # Join words back into a string
     return text
 
-# Predict Sentiment function
+# Sentiment prediction function
 def predict_feedback(text):
-    processed_text = text_preprocessing(text)
-    sentiment_score = analyzer.polarity_scores(processed_text)
+    processed_text = text_preprocessing(text)  # Preprocess the text
+    sentiment_score = analyzer.polarity_scores(processed_text)  # Get sentiment scores
 
     if sentiment_score['compound'] > 0:
         sentiment = 'Positive'
     else:
         sentiment = 'Negative'
-    
-    # Display result using Streamlit markdown
+
+    # Display the sentiment result and score
     st.markdown(
         f"<p style='color: red; font-weight: bold;'>The review is <b>{sentiment}</b></p>",
         unsafe_allow_html=True,
     )
+    st.write(f"Sentiment Score: {sentiment_score}")
 
-# Main App Interface
-st.title('Movie Reviews App')
+# App Layout and Functionality
+st.title('Movie Reviews Sentiment Analysis')
 
-# Text area for user input
+# Input text area
 user_input = st.text_area("Enter the text for movie review:", "I don't like this product.")
 
-# Button to trigger sentiment prediction
 if st.button('Predict Sentiment'):
-    prediction = predict_feedback(user_input)
+    if not user_input.strip():
+        st.warning("Please enter a valid review.")
+    else:
+        predict_feedback(user_input)
 
-# Custom Styling for Streamlit app
+# Custom Styling for the App
 st.markdown(
     """
     <style>
@@ -104,7 +108,6 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Footer
 st.markdown(
     """
     <div style='text-align: center; color: #1E90FF; font-size: 12px;'>
@@ -113,5 +116,3 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-----
-An error occurred while loading the models: 'NoneType' object has no attribute 'pop'
