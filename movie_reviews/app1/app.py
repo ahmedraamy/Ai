@@ -15,7 +15,9 @@ nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
 # Load model
-model = load_model('movie_reviews/app1/artifacts/model.keras')
+from keras.models import load_model
+model = load_model('movie_reviews/app1/artifacts/model.keras', compile=False)
+
 
 # Load tokenizer
 tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
