@@ -16,26 +16,14 @@ nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
 
-# Load models
-tf_model = None
-lr = None
-dt = None
-svc = None
-
 try:
     # Load the TensorFlow/Keras model (update path if necessary)
     tf_model = pickle.load(open('artifacts/tf.pkl', 'rb'))  # Changed `tf` to `tf_model`
-    st.write("TensorFlow model loaded successfully.")  # Debugging line
 
     # Load other models
     lr = pickle.load(open('artifacts/lr.pkl', 'rb'))
-    st.write("Logistic Regression model loaded successfully.")  # Debugging line
-
     dt = pickle.load(open('artifacts/dt.pkl', 'rb'))
-    st.write("Decision Tree model loaded successfully.")  # Debugging line
-
     svc = pickle.load(open('artifacts/svc.pkl', 'rb'))
-    st.write("Support Vector Classifier model loaded successfully.")  # Debugging line
 
 except FileNotFoundError as e:
     st.error(f"Model file not found: {e}")
