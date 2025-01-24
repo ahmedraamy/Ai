@@ -11,6 +11,7 @@ from tensorflow.keras.models import load_model
 from transformers import AutoTokenizer  # Add this import for tokenizer
 
 # Download necessary NLTK resources
+nltk.download('punkt_tab')
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
@@ -19,7 +20,7 @@ nltk.download('omw-1.4')
 # Load models
 try:
     # Load the TensorFlow/Keras model (update path if necessary)
-    tf_model = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))
+    tf = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))
 
     # Load other models
     lr = pickle.load(open('movie_reviews/app2/artifacts/lr.pkl', 'rb'))
