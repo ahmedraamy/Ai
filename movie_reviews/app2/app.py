@@ -22,13 +22,13 @@ try:
     lr = pickle.load(open('movie_reviews/app2/artifacts/lr.pkl', 'rb'))
     dt = pickle.load(open('movie_reviews/app2/artifacts/dt.pkl', 'rb'))
     svc = pickle.load(open('movie_reviews/app2/artifacts/svc.pkl', 'rb'))
-    tf_model = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))
+    tf = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))
     st.success("Models loaded successfully!")
     time.sleep(0.01)
     st.empty()
 except FileNotFoundError as e:
     st.error(f"Model file not found: {e}")
-    lr, dt, svc, tf_model = None, None, None, None
+    lr, dt, svc, tf = None, None, None, None
 
 # Initialize stopwords and other NLP tools
 stop_words = stopwords.words('english')
