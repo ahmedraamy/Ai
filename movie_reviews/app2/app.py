@@ -2,6 +2,7 @@ import streamlit as st
 import pickle
 import re
 import nltk
+import time
 from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
@@ -16,24 +17,24 @@ nltk.download('omw-1.4')
 # Load models
 from tensorflow.keras.models import load_model
 
+# Load TensorFlow model using pickle (change the path accordingly)
 try:
-    # Load the Keras model using TensorFlow's `load_model` method
     tf = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))  # Update the path as needed
-    st.success(" model loaded successfully!")
+    st.success("TensorFlow model loaded successfully!")
     time.sleep(1)  # Wait for 1 second
-    st.empty()
+    st.empty()  # Remove the success message
 except Exception as e:
     st.error(f"An error occurred while loading the TensorFlow model: {e}")
-    tf_model = None
+    tf = None
 
 # Load other models (pickle)
 try:
     lr = pickle.load(open('movie_reviews/app2/artifacts/lr.pkl', 'rb'))
     dt = pickle.load(open('movie_reviews/app2/artifacts/dt.pkl', 'rb'))
     svc = pickle.load(open('movie_reviews/app2/artifacts/svc.pkl', 'rb'))
-    st.success("models loaded successfully!")
+    st.success("Other models loaded successfully!")
     time.sleep(1)  # Wait for 1 second
-    st.empty()
+    st.empty()  # Remove the success message
 except FileNotFoundError as e:
     st.error(f"Model file not found: {e}")
     lr, dt, svc = None, None, None
@@ -90,7 +91,7 @@ user_input = st.text_area("Enter the text for movie review:", "I don't like this
 # Button to trigger sentiment prediction
 if st.button('Predict Sentiment'):
     if tf or lr or dt or svc:
-        prediction = predict_feedback(user_input)
+        predict_feedback(user_input)
     else:
         st.error("Models could not be loaded. Please check the configuration.")
 
@@ -119,15 +120,3 @@ st.markdown(
     }
     </style>
     """,
-    unsafe_allow_html=True,
-)
-
-# Footer
-st.markdown(
-    """
-    <div style='text-align: center; color: #1E90FF; font-size: 12px;'>
-        <p>Created by Ahmed Ramy</p>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
