@@ -7,7 +7,6 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import tensorflow as tf
-from tensorflow.keras.models import load_model
 from transformers import AutoTokenizer  # Add this import for tokenizer
 
 # Download necessary NLTK resources
@@ -18,14 +17,25 @@ nltk.download('wordnet')
 nltk.download('omw-1.4')
 
 # Load models
+tf_model = None
+lr = None
+dt = None
+svc = None
+
 try:
     # Load the TensorFlow/Keras model (update path if necessary)
     tf_model = pickle.load(open('artifacts/tf.pkl', 'rb'))  # Changed `tf` to `tf_model`
+    st.write("TensorFlow model loaded successfully.")  # Debugging line
 
     # Load other models
     lr = pickle.load(open('artifacts/lr.pkl', 'rb'))
+    st.write("Logistic Regression model loaded successfully.")  # Debugging line
+
     dt = pickle.load(open('artifacts/dt.pkl', 'rb'))
+    st.write("Decision Tree model loaded successfully.")  # Debugging line
+
     svc = pickle.load(open('artifacts/svc.pkl', 'rb'))
+    st.write("Support Vector Classifier model loaded successfully.")  # Debugging line
 
 except FileNotFoundError as e:
     st.error(f"Model file not found: {e}")
@@ -74,8 +84,12 @@ user_input = st.text_area("Enter the text for movie review:", "I don't like this
 
 # Button to trigger sentiment prediction
 if st.button('Predict Sentiment'):
-    prediction = predict_feedback(user_input)
-
+    # Check if at least one model is loaded
+    if tf_model or lr or dt or svc:
+        prediction = predict_feedback(user_input)
+    else:
+        st.error("No model is loaded. Please check the model files.")
+        
 # Custom Styling for Streamlit app
 st.markdown(
     """
