@@ -10,13 +10,15 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 # Download necessary NLTK resources
 nltk.download('punkt')  # Corrected from 'punkt_tab' to 'punkt'
 nltk.download('stopwords')
+nltk.download('wordnet')  # Add this line to download WordNet
+nltk.download('omw-1.4')  # Add this line to download Open Multilingual Wordnet
 
 # Load pre-trained models (if applicable)
 try:
-    lr = pickle.load(open('movie_reviews/app2/artifacts/lr.pkl', 'rb'))
-    dt = pickle.load(open('movie_reviews/app2/artifacts/dt.pkl', 'rb'))
-    svc = pickle.load(open('movie_reviews/app2/artifacts/svc.pkl', 'rb'))
-    tf = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))
+    lr = pickle.load(open(r'movie_reviews/app2/artifacts/lr.pkl', 'rb'))
+    dt = pickle.load(open(r'movie_reviews/app2/artifacts/dt.pkl', 'rb'))
+    svc = pickle.load(open(r'movie_reviews/app2/artifacts/svc.pkl', 'rb'))
+    tf = pickle.load(open(r'movie_reviews/app2/artifacts/tf.pkl', 'rb'))
 
     # Pre-processing setup
     stop_words = stopwords.words('english')  # Moved inside the try block
