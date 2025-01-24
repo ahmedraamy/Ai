@@ -6,21 +6,13 @@ from nltk.tokenize import word_tokenize
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
+import os
 
-# Download necessary NLTK resources
+# Ensure necessary NLTK packages are downloaded
 nltk.download('punkt')
 nltk.download('stopwords')
 
-# Load pre-trained models (if applicable)
-try:
-    lr = pickle.load(open('movie_reviews/app2/artifacts/lr.pkl', 'rb'))
-    tf = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))
-    dt = pickle.load(open('movie_reviews/app2/artifacts/dt.pkl', 'rb'))
-    svc = pickle.load(open('movie_reviews/app2/artifacts/svc.pkl', 'rb'))
-except FileNotFoundError as e:
-    st.error(f"Error loading models: {e}")
-    st.stop()
-
+# Load stop words and lemmatizer
 stop_words = stopwords.words('english')
 stop_words.remove('not')
 stop_words.remove('no')
@@ -28,57 +20,75 @@ stop_words.remove('no')
 lemmatizer = WordNetLemmatizer()
 analyzer = SentimentIntensityAnalyzer()
 
+# Directory for your model files
+model_directory = 'movie_reviews/app2/artifacts/'
+
+# Load pre-trained models (if available)
+try:
+    # Check if the required model files exist before loading
+    if not os.path.exists(os.path.join(model_directory, 'lr.pkl')):
+        st.error("Logistic Regression model (lr.pkl) not found!")
+        st.stop()
+
+    if not os.path.exists(os.path.join(model_directory, 'tf.pkl')):
+        st.error("TF-IDF model (tf.pkl) not found!")
+        st.stop()
+
+    if not os.path.exists(os.path.join(model_directory, 'dt.pkl')):
+        st.error("Decision Tree model (dt.pkl) not found!")
+        st.stop()
+
+    if not os.path.exists(os.path.join(model_directory, 'svc.pkl')):
+        st.error("SVM model (svc.pkl) not found!")
+        st.stop()
+
+    lr = pickle.load(open(os.path.join(model_directory, 'lr.pkl'), 'rb'))
+    tf = pickle.load(open(os.path.join(model_directory, 'tf.pkl'), 'rb'))
+    dt = pickle.load(open(os.path.join(model_directory, 'dt.pkl'), 'rb'))
+    svc = pickle.load(open(os.path.join(model_directory, 'svc.pkl'), 'rb'))
+
+except FileNotFoundError as e:
+    st.error(f"Error loading model: {e}. Make sure the model files are in the correct directory.")
+    st.stop()
+
+# Text preprocessing function
 def text_preprocessing(text):
-    # Preprocess the text for tokenization and lemmatization
-    text = text.lower()
-    text = re.sub('[^a-zA-Z]', ' ', text)
-    text = word_tokenize(text)
-    text = [word for word in text if word not in stop_words]
-    text = [lemmatizer.lemmatize(word) for word in text]
-    text = ' '.join(text)
+    text = text.lower()  # Convert to lowercase
+    text = re.sub('[^a-zA-Z]', ' ', text)  # Remove non-alphabetic characters
+    text = word_tokenize(text)  # Tokenize text into words
+    text = [word for word in text if word not in stop_words]  # Remove stopwords
+    text = [lemmatizer.lemmatize(word) for word in text]  # Lemmatize words
+    text = ' '.join(text)  # Join words back into a string
     return text
 
+# Sentiment prediction function
 def predict_feedback(text):
-    # Predict sentiment using Vader Sentiment Analyzer
-    processed_text = text_preprocessing(text)
-    sentiment_score = analyzer.polarity_scores(processed_text)
-
+    processed_text = text_preprocessing(text)  # Preprocess the text
+    sentiment_score = analyzer.polarity_scores(processed_text)  # Analyze sentiment
+    
+    # Determine sentiment based on compound score
     if sentiment_score['compound'] > 0:
         sentiment = 'Positive'
     else:
         sentiment = 'Negative'
 
+    # Display the sentiment result on Streamlit
     st.markdown(
         f"<p style='color: red; font-weight: bold;'>The review is <b>{sentiment}</b></p>",
-        unsafe_allow_html=True,
-    )
-
-def predict_movie_sentiment(text):
-    # Example prediction function using a model (e.g., lr, tf, dt, or svc)
-    processed_text = text_preprocessing(text)
-    
-    # Assuming you want to use the logistic regression model as an example
-    text_vectorized = tf.transform([processed_text])  # Transform the text using tfidf
-    prediction = lr.predict(text_vectorized)  # Predict sentiment using the model
-    sentiment = 'Positive' if prediction == 1 else 'Negative'
-
-    st.markdown(
-        f"<p style='color: green; font-weight: bold;'>The review is <b>{sentiment}</b></p>",
         unsafe_allow_html=True,
     )
 
 # Streamlit UI
 st.title('Movie Reviews App')
 
+# User input text area
 user_input = st.text_area("Enter the text for movie review:", "I don't like this product.")
 
+# Button to trigger sentiment prediction
 if st.button('Predict Sentiment'):
-    # Using Vader sentiment analysis for the user input
-    predict_feedback(user_input)
-    # Alternatively, you can call the movie sentiment prediction function like so:
-    # predict_movie_sentiment(user_input)
+    prediction = predict_feedback(user_input)
 
-# Custom styling
+# Custom CSS for styling
 st.markdown(
     """
     <style>
@@ -106,6 +116,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# Footer
 st.markdown(
     """
     <div style='text-align: center; color: #1E90FF; font-size: 12px;'>
