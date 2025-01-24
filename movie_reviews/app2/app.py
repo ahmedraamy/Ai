@@ -19,7 +19,9 @@ from tensorflow.keras.models import load_model
 try:
     # Load the Keras model using TensorFlow's `load_model` method
     tf = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))  # Update the path as needed
-    st.success("TensorFlow model loaded successfully!")
+    st.success(" model loaded successfully!")
+    time.sleep(1)  # Wait for 1 second
+    st.empty()
 except Exception as e:
     st.error(f"An error occurred while loading the TensorFlow model: {e}")
     tf_model = None
@@ -29,7 +31,9 @@ try:
     lr = pickle.load(open('movie_reviews/app2/artifacts/lr.pkl', 'rb'))
     dt = pickle.load(open('movie_reviews/app2/artifacts/dt.pkl', 'rb'))
     svc = pickle.load(open('movie_reviews/app2/artifacts/svc.pkl', 'rb'))
-    st.success("Other models loaded successfully!")
+    st.success("models loaded successfully!")
+    time.sleep(1)  # Wait for 1 second
+    st.empty()
 except FileNotFoundError as e:
     st.error(f"Model file not found: {e}")
     lr, dt, svc = None, None, None
