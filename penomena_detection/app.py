@@ -74,4 +74,3 @@ st.markdown(
 """,
     unsafe_allow_html=True,
 )
-correct the code
