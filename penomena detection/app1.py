@@ -52,6 +52,6 @@ else:
 st.markdown(
     """
     <div style="position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); font-size: 14px; color: gray;">
-        This page was created by <strong>Mohamed Hosam</strong>
+        This page was created by <strong>Ahmed ramy</strong>
     </div>
     """, unsafe_allow_html=True)
