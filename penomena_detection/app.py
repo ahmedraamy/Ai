@@ -7,9 +7,12 @@ from PIL import Image, ImageOps
 dic = {0: 'Normal', 1: "Infected"}
 
 # Load the pre-trained TFLite model
-interpreter = tf.lite.Interpreter(model_path="penomena_detection/artifacts/converted_model.tflite")
-interpreter.allocate_tensors()
+converter = tf.lite.TFLiteConverter.from_keras_model(model)
+tflite_model = converter.convert()
 
+# Save the converted model
+with open('artifacts/converted_model.tflite', 'wb') as f:
+    f.write(tflite_model)
 # Upload image
 st.markdown(
     "<h1 style='color: #d20000;'>Pneumonia Detection from X-ray</h1>",
