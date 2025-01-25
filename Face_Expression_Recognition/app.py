@@ -50,7 +50,8 @@ if uploaded_file is not None:
     # Display the uploaded image
     st.image(image, caption="Uploaded Image.", use_container_width=True)
     
-    
+
+
 st.markdown(
     """
     <div style='text-align: center; color: #1E90FF; font-size: 12px;'>
