@@ -17,7 +17,7 @@ nltk.download('wordnet')
 nltk.download('omw-1.4')
 # Load model
 from keras.models import load_model
-model = load_model('movie_reviews/app2/artifacts/model.keras', compile=False)
+model = load_model('movie_reviews/app1/artifacts/model.keras', compile=False)
 
 
 # Load tokenizer
@@ -63,11 +63,11 @@ def predict_movie_sentiment(text):
     processed_text = text_preprocessing(text)
     sentiment_score = analyzer.polarity_scores(processed_text)
 
-st.title('Seq2Seq Model Deployment')
+st.title('Movie Reviews App')
 
-user_input = st.text_area("Enter your input text and get the model's output below." , "I don't like this product.")
+user_input = st.text_area("Enter the text for movie review:" , "I don't like this product.")
 
-if st.button('Generate Output'):
+if st.button('Predict Sentiment'):
     prediction = predict_feedback(user_input)
     # No need to write prediction here as it's just the function call
 
