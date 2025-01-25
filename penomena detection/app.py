@@ -6,8 +6,9 @@ from PIL import Image, ImageOps
 # Class dictionary
 dic = {0: 'Normal', 1: "Infected"}
 
-# Load the pre-trained model
-model = tf.keras.models.load_model("penomena detection/artifacts/Model.keras")
+# Load the pre-trained TFLite model
+interpreter = tf.lite.Interpreter(model_path="artifacts/converted_model.tflite")
+interpreter.allocate_tensors()
 
 # Upload image
 st.markdown(
@@ -41,9 +42,22 @@ if img_file and st.button("Predict"):
         img_array = img_array / 255.0  # Normalize
         img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
 
-        # Prediction
-        pred = model.predict(img_array)
-        result = dic[int(pred[0][0])]
+        # Get input details
+        input_details = interpreter.get_input_details()
+        output_details = interpreter.get_output_details()
+
+        # Set the input tensor
+        interpreter.set_tensor(input_details[0]['index'], img_array.astype(np.float32))
+
+        # Invoke the interpreter
+        interpreter.invoke()
+
+        # Get the output tensor
+        output_data = interpreter.get_tensor(output_details[0]['index'])
+        pred = output_data[0][0]
+
+        # Map prediction to class label
+        result = dic[int(pred)]
 
         # Display result
         st.success(f"The prediction is: {result}")
@@ -55,7 +69,7 @@ if img_file and st.button("Predict"):
 st.markdown(
     """
     <div style='text-align: center; color: #d20000; font-size: 12px;'>
-        <p>Created by Ahmed ramy</p>
+        <p>Created by Ahmed Ramy</p>
     </div>
 """,
     unsafe_allow_html=True,
