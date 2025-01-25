@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pickle
 import re
@@ -23,7 +22,7 @@ model = load_model('movie_reviews/app1/artifacts/model.keras', compile=False)
 # Load tokenizer
 tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
 
-with open('movie_reviews/app1/artifacts/tokenizer.pkl', 'wb') as f:
+with open('tokenizer.pkl', 'wb') as f:
     pickle.dump(tokenizer, f)
 
 nltk.download('stopwords')
