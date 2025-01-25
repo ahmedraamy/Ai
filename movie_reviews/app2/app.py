@@ -22,22 +22,22 @@ tf_model, lr, dt, svc = None, None, None, None
 
 # Load models with error handling
 try:
-    tf_model = load_tensorflow_model('path/to/tf_model')
+    tf_model = load_tensorflow_model('movie_reviews/app2/artifacts/tf.pkl')
 except Exception as e:
     print(f"Error loading TensorFlow model: {e}")
 
 try:
-    lr = load_linear_regression_model('path/to/lr_model')
+    lr = load_linear_regression_model('movie_reviews/app2/artifacts/lr.pkl')
 except Exception as e:
     print(f"Error loading Linear Regression model: {e}")
 
 try:
-    dt = load_decision_tree_model('path/to/dt_model')
+    dt = load_decision_tree_model('movie_reviews/app2/artifacts/dt.pkl')
 except Exception as e:
     print(f"Error loading Decision Tree model: {e}")
 
 try:
-    svc = load_support_vector_classifier('path/to/svc_model')
+    svc = load_support_vector_classifier('movie_reviews/app2/artifacts/svc.pkl')
 except Exception as e:
     print(f"Error loading SVC model: {e}")
 
