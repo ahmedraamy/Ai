@@ -1,57 +1,77 @@
 
 import streamlit as st
-import numpy as np
 import tensorflow as tf
+import numpy as np
 from PIL import Image, ImageOps
-import gdown
 
-# Direct link to the Google Drive file
-url = 'https://drive.google.com/uc?id=1NaEyY4hKFUN6znsWIZoh3LrizB5xr990'
-output = 'Model.keras'
+# Class dictionary
+dic = {0: 'Normal', 1: "Infected"}
 
-# Download the model from Google Drive using gdown
-gdown.download(url, output, quiet=False)
+# Load the pre-trained TFLite model
+interpreter = tf.lite.Interpreter(model_path="penomena detection/artifacts/converted_model.tflite")
+interpreter.allocate_tensors()
 
-# Load the trained model
-model = tf.keras.models.load_model(output)
+# Upload image
+st.markdown(
+    "<h1 style='color: #d20000;'>Pneumonia Detection from X-ray</h1>",
+    unsafe_allow_html=True
+)
+img_file = st.file_uploader("Upload your X-ray", type=["jpg", "jpeg", "png"])
 
-# Upload an X-ray image from the user
-img = st.file_uploader('Upload your X-ray', type=['jpg', 'png', 'jpeg'])
+# Display image
+if img_file:
+    st.image(img_file, caption="Uploaded Image", use_column_width=True)
 
-# Check if an image has been uploaded
-if img is not None:
-    st.image(img)  # Display the uploaded image
+# Predict button
+if img_file and st.button("Predict"):
+    try:
+        # Open the image
+        img = Image.open(img_file)
 
-    # Button to trigger prediction
-    button = st.button('Predict')
+        # Check dimensions and convert to grayscale if necessary
+        if len(np.array(img).shape) != 2:
+            st.warning("Image is not grayscale. Converting to grayscale.")
+            img = ImageOps.grayscale(img)
 
-    if button:
-        # Open the uploaded image and convert it to grayscale (single channel)
-        img = Image.open(img)
-        img = img.convert("L")  # Convert to grayscale (1 channel)
+        # Resize to 224x224
+        img = img.resize((224, 224))
         
-        # Resize the image to the input size expected by the model
-        img = img.resize((256, 256))
-        
-        # Normalize the image to [0, 1] range and expand dimensions for batch size
-        img_array = np.array(img) / 255.0
-        img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension (1, 256, 256, 1)
-        
-        # Predict the class (Pneumonia or Normal) using the model
-        pred = model.predict(img_array)
-        
-        # If the prediction value is greater than 0.5, consider the person as likely having Pneumonia
-        if pred[0] > 0.5:
-            st.write("The person is likely to have Pneumonia.")
-        else:
-            st.write("The person is likely to be healthy.")
-else:
-    st.write("Please upload an image.")
+        # Convert to NumPy array and add channel dimension (for grayscale)
+        img_array = np.expand_dims(np.array(img), axis=-1)
+
+        # Normalize the image and add batch dimension
+        img_array = img_array / 255.0  # Normalize
+        img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
+
+        # Get input details
+        input_details = interpreter.get_input_details()
+        output_details = interpreter.get_output_details()
+
+        # Set the input tensor
+        interpreter.set_tensor(input_details[0]['index'], img_array.astype(np.float32))
+
+        # Invoke the interpreter
+        interpreter.invoke()
+
+        # Get the output tensor
+        output_data = interpreter.get_tensor(output_details[0]['index'])
+        pred = output_data[0][0]
+
+        # Map prediction to class label
+        result = dic[int(pred)]
+
+        # Display result
+        st.success(f"The prediction is: {result}")
+
+    except Exception as e:
+        st.error(f"An error occurred: {e}")
 
 
 st.markdown(
     """
-    <div style="position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%); font-size: 14px; color: gray;">
-        This page was created by <strong>Mohamed Hosam</strong>
+    <div style='text-align: center; color: #d20000; font-size: 12px;'>
+        <p>Created by Ahmed Ramy</p>
     </div>
-    """, unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
