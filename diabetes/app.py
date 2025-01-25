@@ -50,6 +50,7 @@ if st.button("Predict"):
         except Exception as e:
             st.error(f"An error occurred during prediction: {e}")
             
+
 st.markdown(
     """
     <div style='text-align: center; color: #1E90FF; font-size: 12px;'>
