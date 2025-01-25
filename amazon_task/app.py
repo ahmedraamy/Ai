@@ -7,6 +7,10 @@ from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
+nltk.download('punkt_tab')
+nltk.download('stopwords')
+nltk.download('wordnet')
+nltk.download('omw-1.4')
 # Load pre-trained models (if applicable)
 try:
   lr = pickle.load(open('amazon_task/artifacts/lr.pkl', 'rb'))
