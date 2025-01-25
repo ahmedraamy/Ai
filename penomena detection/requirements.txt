@@ -2,3 +2,9 @@ streamlit==1.41.1
 tensorflow==2.18.0
 numpy==1.26.4
 pillow==10.0.0
+fiona
+requests
+datetime
+rasterio
+numpy
+Pillow
