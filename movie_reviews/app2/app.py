@@ -63,7 +63,7 @@ def predict_movie_sentiment(text):
     processed_text = text_preprocessing(text)
     sentiment_score = analyzer.polarity_scores(processed_text)
 
-st.title('Seq2Seq Model Deployment')
+st.title('Sequence to Sequence Model Deployment')
 
 user_input = st.text_area("Enter your input text and get the model's output below:" , "I don't like this product.")
 
