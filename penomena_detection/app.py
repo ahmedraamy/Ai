@@ -27,50 +27,29 @@ if img_file and st.button("Predict"):
         # Open the image
         img = Image.open(img_file)
 
-        # Check dimensions and convert to grayscale if necessary
+        # Convert to grayscale if the image is not already
         if len(np.array(img).shape) != 2:
             st.warning("Image is not grayscale. Converting to grayscale.")
             img = ImageOps.grayscale(img)
 
-        # Resize to 224x224
+        # Resize the image to the size expected by the model (224x224)
         img = img.resize((224, 224))
-        
-        # Convert to NumPy array and add channel dimension (for grayscale)
+
+        # Convert the image to a NumPy array and expand the dimensions (for grayscale)
         img_array = np.expand_dims(np.array(img), axis=-1)
 
-        # Normalize the image and add batch dimension
-        img_array = img_array / 255.0  # Normalize
-        img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
+        # Normalize the image data to [0, 1] range
+        img_array = img_array / 255.0
 
-        # Get input details
+        # Add batch dimension (required for TensorFlow Lite model)
+        img_array = np.expand_dims(img_array, axis=0)
+
+        # Get the input details from the model
         input_details = interpreter.get_input_details()
         output_details = interpreter.get_output_details()
 
-        # Set the input tensor
+        # Set the input tensor (ensure data type matches)
         interpreter.set_tensor(input_details[0]['index'], img_array.astype(np.float32))
 
-        # Invoke the interpreter
-        interpreter.invoke()
-
-        # Get the output tensor
-        output_data = interpreter.get_tensor(output_details[0]['index'])
-        pred = output_data[0][0]
-
-        # Map prediction to class label
-        result = dic[int(pred)]
-
-        # Display result
-        st.success(f"The prediction is: {result}")
-
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
-
-
-st.markdown(
-    """
-    <div style='text-align: center; color: #d20000; font-size: 12px;'>
-        <p>Created by Ahmed Ramy</p>
-    </div>
-""",
-    unsafe_allow_html=True,
-)
+        # Run inference
+      
