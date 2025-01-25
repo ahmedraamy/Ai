@@ -63,11 +63,11 @@ def predict_movie_sentiment(text):
     processed_text = text_preprocessing(text)
     sentiment_score = analyzer.polarity_scores(processed_text)
 
-st.title('Movie Reviews App')
+st.title('Seq2Seq Model Deployment')
 
-user_input = st.text_area("Enter the text for movie review:" , "I don't like this product.")
+user_input = st.text_area("Enter your input text and get the model's output below." , "I don't like this product.")
 
-if st.button('Predict Sentiment'):
+if st.button('Generate Output'):
     prediction = predict_feedback(user_input)
     # No need to write prediction here as it's just the function call
 
