@@ -8,47 +8,30 @@ from nltk.stem import WordNetLemmatizer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import tensorflow as tf
 from tensorflow.keras.models import load_model
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer  # Add this import for tokenizer
 
-# NLTK downloads
-nltk.download('punkt')
+# Download necessary NLTK resources
 nltk.download('punkt_tab')
+nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
-# Initialize models to None
-# Ensure all variables are initialized
-tf_model, lr, dt, svc = None, None, None, None
 
-# Load models with error handling
+# Load models
 try:
-    tf = load_tensorflow_model('movie_reviews/app2/artifacts/tf.pkl')
+    # Load the TensorFlow/Keras model (update path if necessary)
+    tf = pickle.load(open('movie_reviews/app2/artifacts/tf.pkl', 'rb'))
+    # Load other models
+    lr = pickle.load(open('movie_reviews/app2/artifacts/lr.pkl', 'rb'))
+    dt = pickle.load(open('movie_reviews/app2/artifacts/dt.pkl', 'rb'))
+    svc = pickle.load(open('movie_reviews/app2/artifacts/svc.pkl', 'rb'))
+
+except FileNotFoundError as e:
+    st.error(f"Model file not found: {e}")
 except Exception as e:
-    print(f"Error loading TensorFlow model: {e}")
+    st.error(f"An error occurred while loading the models: {e}")
 
-try:
-    lr = load_linear_regression_model('movie_reviews/app2/artifacts/lr.pkl')
-except Exception as e:
-    print(f"Error loading Linear Regression model: {e}")
-
-try:
-    dt = load_decision_tree_model('movie_reviews/app2/artifacts/dt.pkl')
-except Exception as e:
-    print(f"Error loading Decision Tree model: {e}")
-
-try:
-    svc = load_support_vector_classifier('movie_reviews/app2/artifacts/svc.pkl')
-except Exception as e:
-    print(f"Error loading SVC model: {e}")
-
-# Check if at least one model is loaded
-if any(model is not None for model in [tf, lr, dt, svc]):
-    print("At least one model is loaded")
-else:
-    print("No models loaded")
-
-
-# Stopwords setup
+# Initialize stopwords and other NLP tools
 stop_words = stopwords.words('english')
 stop_words.remove('not')
 stop_words.remove('no')
@@ -56,51 +39,71 @@ stop_words.remove('no')
 lemmatizer = WordNetLemmatizer()
 analyzer = SentimentIntensityAnalyzer()
 
-# Text preprocessing function
+# Text Preprocessing function
 def text_preprocessing(text):
     text = text.lower()
     text = re.sub('[^a-zA-Z]', ' ', text)
     text = word_tokenize(text)
     text = [word for word in text if word not in stop_words]
     text = [lemmatizer.lemmatize(word) for word in text]
-    return ' '.join(text)
+    text = ' '.join(text)
+    return text
 
-# Predict feedback
+# Predict Sentiment function
 def predict_feedback(text):
     processed_text = text_preprocessing(text)
     sentiment_score = analyzer.polarity_scores(processed_text)
 
-    sentiment = 'Positive' if sentiment_score['compound'] > 0 else 'Negative'
+    if sentiment_score['compound'] > 0:
+        sentiment = 'Positive'
+    else:
+        sentiment = 'Negative'
+    
+    # Display result using Streamlit markdown
     st.markdown(
         f"<p style='color: red; font-weight: bold;'>The review is <b>{sentiment}</b></p>",
         unsafe_allow_html=True,
     )
-    return sentiment
 
-# Streamlit App
+# Main App Interface
 st.title('Movie Reviews App')
 
+# Text area for user input
 user_input = st.text_area("Enter the text for movie review:", "I don't like this product.")
 
+# Button to trigger sentiment prediction
 if st.button('Predict Sentiment'):
-    predict_feedback(user_input)
+    prediction = predict_feedback(user_input)
 
-# Add styles
+# Custom Styling for Streamlit app
 st.markdown(
     """
     <style>
-    .main { background-color: #f0f2f6; }
-    h1 { color: #1E90FF; }
-    .stButton>button { background-color: #1E90FF; color: white; }
-    .stTextInput>div>input {
-        background-color: #ffffff; color: #1E90FF; border: 2px solid #1E90FF; padding: 10px;
+    .main { 
+        background-color: #f0f2f6; 
     }
-    .stTextInput>div>input:focus { border-color: #1E90FF; }
+    h1 {
+        color: #1E90FF; 
+    }
+    .stButton>button {
+        background-color: #1E90FF; 
+        color: white;
+    }
+    .stTextInput>div>input {
+        background-color: #ffffff; 
+        color: #1E90FF; 
+        border: 2px solid #1E90FF; 
+        padding: 10px;
+    }
+    .stTextInput>div>input:focus {
+        border-color: #1E90FF; 
+    }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
+# Footer
 st.markdown(
     """
     <div style='text-align: center; color: #1E90FF; font-size: 12px;'>
