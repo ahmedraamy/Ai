@@ -6,8 +6,8 @@ from PIL import Image, ImageOps
 import gdown
 
 # Direct link to the Google Drive file
-url = 'https://drive.google.com/uc?id=1NaEyY4hKFUN6znsWIZoh3LrizB5xr990'
-output = 'Model.keras'
+interpreter = tf.lite.Interpreter(model_path="penomena detection/artifacts/converted_model.tflite")
+interpreter.allocate_tensors()
 
 # Download the model from Google Drive using gdown
 gdown.download(url, output, quiet=False)
