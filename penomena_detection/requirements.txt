@@ -1,12 +1,4 @@
-<<<<<<< HEAD
-
-streamlit
-tensorflow
-gdown
-Pillow
-=======
 streamlit==1.41.1
 tensorflow==2.18.0
 numpy==1.26.4
 Pillow==10.0.0
->>>>>>> 453a19f3fe09a2db95ce040d3cc808cc2e54c915
