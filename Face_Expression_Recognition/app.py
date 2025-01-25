@@ -54,7 +54,7 @@ if uploaded_file is not None:
 
 st.markdown(
     """
-    <div style='text-align: center; color: #rgb(13, 19, 24); font-size: 12px;'>
+    <div style='text-align: center; color: #rgb(13, 19, 24); font-size: 15px;'>
         <p>Created by Ahmed ramy</p>
     </div>
 """,
