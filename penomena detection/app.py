@@ -7,7 +7,7 @@ from PIL import Image, ImageOps
 dic = {0: 'Normal', 1: "Infected"}
 
 # Load the pre-trained model
-model = tf.keras.models.load_model("artifacts/Model.keras")
+model = tf.keras.models.load_model("penomena detection/artifacts/Model.keras")
 
 # Upload image
 st.markdown(
