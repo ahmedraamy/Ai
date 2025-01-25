@@ -9,10 +9,10 @@ from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 # Load pre-trained models (if applicable)
 try:
-  lr = pickle.load(open('lr.pkl', 'rb'))
-  tf = pickle.load(open('tf.pkl', 'rb'))
-  dt = pickle.load(open('dt.pkl', 'rb'))
-  svc = pickle.load(open('svc.pkl', 'rb'))
+  lr = pickle.load(open('amazon_task/artifacts/lr.pkl', 'rb'))
+  tf = pickle.load(open('amazon_task/artifacts/tf.pkl', 'rb'))
+  dt = pickle.load(open('amazon_task/artifacts/dt.pkl', 'rb'))
+  svc = pickle.load(open('amazon_task/artifacts/svc.pkl', 'rb'))
 except ModuleNotFoundError as e:
   st.error(f"Error loading models: {e}")
   st.stop()
