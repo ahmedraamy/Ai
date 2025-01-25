@@ -7,7 +7,7 @@ from PIL import Image, ImageOps
 dic = {0: 'Normal', 1: "Infected"}
 
 # Load the pre-trained TFLite model
-interpreter = tf.lite.Interpreter(model_path="penomena detection/artifacts/converted_model.tflite")
+interpreter = tf.lite.Interpreter(model_path="penomena_detection/artifacts/converted_model.tflite")
 interpreter.allocate_tensors()
 
 # Upload image
