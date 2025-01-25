@@ -52,4 +52,27 @@ if img_file and st.button("Predict"):
         interpreter.set_tensor(input_details[0]['index'], img_array.astype(np.float32))
 
         # Run inference
-      
+        interpreter.invoke()
+
+        # Get the output tensor and make the prediction
+        output_data = interpreter.get_tensor(output_details[0]['index'])
+        pred = output_data[0][0]  # Assuming the model returns a single probability value
+
+        # Map the prediction to the class label
+        result = dic[int(pred)]  # Convert the prediction to the class label
+
+        # Display the result
+        st.success(f"The prediction is: {result}")
+
+    except Exception as e:
+        st.error(f"An error occurred: {e}")  # Ensures exception is caught and displayed
+
+# Footer
+st.markdown(
+    """
+    <div style='text-align: center; color: #d20000; font-size: 12px;'>
+        <p>Created by Ahmed Ramy</p>
+    </div>
+""",
+    unsafe_allow_html=True,
+)
