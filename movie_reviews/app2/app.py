@@ -22,7 +22,7 @@ tf_model, lr, dt, svc = None, None, None, None
 
 # Load models with error handling
 try:
-    tf_model = load_tensorflow_model('movie_reviews/app2/artifacts/tf.pkl')
+    tf = load_tensorflow_model('movie_reviews/app2/artifacts/tf.pkl')
 except Exception as e:
     print(f"Error loading TensorFlow model: {e}")
 
@@ -42,7 +42,7 @@ except Exception as e:
     print(f"Error loading SVC model: {e}")
 
 # Check if at least one model is loaded
-if any(model is not None for model in [tf_model, lr, dt, svc]):
+if any(model is not None for model in [tf, lr, dt, svc]):
     print("At least one model is loaded")
 else:
     print("No models loaded")
