@@ -49,3 +49,12 @@ if st.button("Predict"):
                 st.success("The patient is not likely to have diabetes.")
         except Exception as e:
             st.error(f"An error occurred during prediction: {e}")
+            
+st.markdown(
+    """
+    <div style='text-align: center; color: #1E90FF; font-size: 12px;'>
+        <p>Created by Ahmed ramy</p>
+    </div>
+""",
+    unsafe_allow_html=True,
+)
