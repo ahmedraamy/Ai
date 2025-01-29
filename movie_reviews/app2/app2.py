@@ -8,25 +8,22 @@ from nltk.stem import WordNetLemmatizer
 from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 import tensorflow as tf
 from tensorflow.keras.models import load_model
-from transformers import AutoTokenizer  # Add this import for tokenizer
+from transformers import AutoTokenizer
 
-nltk.download('punkt_tab')
+nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 nltk.download('omw-1.4')
-# Load model
-from keras.models import load_model
-model = load_model('movie_reviews/app1/artifacts/model.keras', compile=False)
 
+# Load model
+model = load_model('movie_reviews/app1/artifacts/model.keras', compile=False)
 
 # Load tokenizer
 tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
 
-with open('tokenizer.pkl', 'wb') as f:
-    pickle.dump(tokenizer, f)
-
-nltk.download('stopwords')
-nltk.download('punkt')
+# Save tokenizer (not necessary if you're loading it directly)
+# with open('tokenizer.pkl', 'wb') as f:
+#     pickle.dump(tokenizer, f)
 
 stop_words = stopwords.words('english')
 stop_words.remove('not')
@@ -52,23 +49,31 @@ def predict_feedback(text):
         sentiment = 'Positive'
     else:
         sentiment = 'Negative'
-    # Call st.markdown only once to display the sentiment analysis result
-    st.markdown(
-        f"<p style='color: red; font-weight: bold;'>The review is <b>{sentiment}</b></p>",
-        unsafe_allow_html=True,
-    )
+
+    return sentiment
 
 def predict_movie_sentiment(text):
+    # This function is not used in your current code. You might want to integrate the model here.
     processed_text = text_preprocessing(text)
-    sentiment_score = analyzer.polarity_scores(processed_text)
+    # Use the model for prediction
+    # inputs = tokenizer(processed_text, return_tensors='tf')
+    # prediction = model.predict(inputs)
+    # For now, just return the processed text
+    return processed_text
 
 st.title('Sequence to Sequence Model Deployment')
 
 user_input = st.text_area("Enter your input text and get the model's output below:" , "I don't like this product.")
 
 if st.button('Generate Output'):
-    prediction = predict_feedback(user_input)
-    # No need to write prediction here as it's just the function call
+    sentiment = predict_feedback(user_input)
+    st.markdown(
+        f"<p style='color: red; font-weight: bold;'>The review is <b>{sentiment}</b></p>",
+        unsafe_allow_html=True,
+    )
+    # If you want to use the model for prediction, uncomment the following lines and modify predict_movie_sentiment
+    # prediction = predict_movie_sentiment(user_input)
+    # st.write(prediction)
 
 st.markdown(
     """
