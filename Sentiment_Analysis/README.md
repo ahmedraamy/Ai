@@ -17,7 +17,7 @@ A web-based application to predict sentiment (Positive/Negative) using machine l
 1. Clone this repository:
    ```bash
    git clone https://github.com/ahmedraamy/Ai/tree/main/Sentiment_Analysis
-   cd sentiment-analysis-app
+   cd Sentiment_Analysis
    ```
    
 2. Install dependencies:
